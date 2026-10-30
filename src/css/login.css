@@ -1,0 +1,434 @@
+/*
+ * Tela de login do WordPress (wp-login.php) com a identidade do site.
+ * As cores da marca chegam por variáveis CSS (inc/login.php), as mesmas do painel.
+ */
+@import "@fontsource-variable/outfit";
+
+:root {
+	--ink: #0b0a10;
+	--surface: #15131d;
+	--brand: var(--sp-primary, #7c3aed);
+	--accent: var(--sp-accent, #ff4d6d);
+	--highlight: var(--sp-highlight, #c6ff3d);
+	--line: rgb(255 255 255 / 0.1);
+	--muted: rgb(255 255 255 / 0.55);
+	color-scheme: dark;
+}
+
+body.login {
+	min-height: 100dvh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 2rem 1rem;
+	box-sizing: border-box;
+	background:
+		radial-gradient(40% 45% at 85% 10%, color-mix(in srgb, var(--brand) 38%, transparent), transparent 70%),
+		radial-gradient(35% 40% at 10% 95%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%),
+		var(--ink);
+	color: rgb(255 255 255 / 0.85);
+	font-family: "Outfit Variable", ui-sans-serif, system-ui, sans-serif;
+	-webkit-font-smoothing: antialiased;
+}
+
+html {
+	background: var(--ink);
+}
+
+/* Só textos e campos: os ícones (dashicons) mantêm a fonte própria. */
+.login input,
+.login button,
+.login select,
+.login label,
+.login p,
+.login a {
+	font-family: inherit;
+}
+
+#login {
+	width: 100%;
+	max-width: 380px;
+	padding: 0;
+	margin: 0;
+}
+
+/*
+ * Espaçadores flexíveis centralizam na vertical e encolhem a zero quando a tela é baixa (sem cortar o topo).
+ * Não dá para usar margin-bottom: auto no último filho: o WP adiciona scripts e regiões de leitor de tela no fim do body.
+ */
+body.login::before,
+body.login::after {
+	content: "";
+	flex: 1 1 0;
+}
+
+/* Marca no lugar do logo do WordPress. */
+#login h1 a {
+	display: block;
+	width: auto;
+	height: auto;
+	margin: 0 auto 1.75rem;
+	padding-top: 76px;
+	background-image: var(--sp-login-logo);
+	background-size: 64px 64px;
+	background-position: center top;
+	text-indent: 0;
+	font-size: 1.6rem;
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	line-height: 1.2;
+	color: #fff;
+	text-align: center;
+	filter: drop-shadow(0 10px 24px color-mix(in srgb, var(--brand) 35%, transparent));
+}
+
+#login h1 a:focus {
+	box-shadow: none;
+	outline: 2px solid var(--highlight);
+	outline-offset: 6px;
+	border-radius: 12px;
+}
+
+/* Cartão do formulário. */
+.login form {
+	margin: 0;
+	padding: 1.75rem;
+	background: var(--surface);
+	border: 1px solid rgb(255 255 255 / 0.07);
+	border-radius: 24px;
+	box-shadow: 0 30px 60px rgb(0 0 0 / 0.45);
+}
+
+.login label {
+	color: rgb(255 255 255 / 0.8);
+	font-size: 0.875rem;
+	font-weight: 500;
+}
+
+.login form .input,
+.login input[type="text"],
+.login input[type="password"],
+.login input[type="email"] {
+	margin: 0.4rem 0 1.1rem;
+	padding: 0.7rem 1rem;
+	min-height: 48px;
+	font-size: 1rem;
+	color: #fff;
+	background: rgb(11 10 16 / 0.6);
+	border: 1px solid var(--line);
+	border-radius: 16px;
+	box-shadow: none;
+}
+
+.login form .input:focus,
+.login input[type="text"]:focus,
+.login input[type="password"]:focus,
+.login input[type="email"]:focus {
+	border-color: var(--brand);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 30%, transparent);
+	outline: none;
+}
+
+/* Autopreenchimento do navegador sem fundo claro. */
+.login input:-webkit-autofill {
+	-webkit-text-fill-color: #fff;
+	-webkit-box-shadow: 0 0 0 100px #1a1724 inset;
+	caret-color: #fff;
+}
+
+.login .wp-pwd {
+	position: relative;
+}
+
+.login .button.wp-hide-pw {
+	top: 0.45rem;
+	right: 0.35rem;
+	min-height: 40px;
+	height: 40px;
+	color: var(--muted);
+	background: transparent;
+	border: 0;
+	border-radius: 12px;
+}
+
+.login .button.wp-hide-pw:hover,
+.login .button.wp-hide-pw:focus {
+	color: #fff;
+	background: rgb(255 255 255 / 0.06);
+	box-shadow: none;
+}
+
+/* Mesma altura do botão "Acessar" ao lado, para alinhar na vertical. */
+.login .forgetmenot {
+	display: flex;
+	align-items: center;
+	min-height: 40px;
+	margin: 0;
+}
+
+/* Checkbox próprio: o do WP desenha um "check" com SVG azul que não combina com o fundo escuro. */
+.login .forgetmenot label {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.6rem;
+	cursor: pointer;
+}
+
+.login input[type="checkbox"] {
+	position: relative;
+	display: inline-grid;
+	place-items: center;
+	width: 20px;
+	min-width: 20px;
+	height: 20px;
+	margin: 0;
+	background: rgb(11 10 16 / 0.6);
+	border: 1.5px solid rgb(255 255 255 / 0.3);
+	border-radius: 6px;
+	box-shadow: none;
+	appearance: none;
+	-webkit-appearance: none;
+	transition: background-color 0.15s, border-color 0.15s;
+}
+
+.login input[type="checkbox"]:hover {
+	border-color: rgb(255 255 255 / 0.55);
+}
+
+.login input[type="checkbox"]:checked {
+	background: var(--brand);
+	border-color: var(--brand);
+}
+
+.login input[type="checkbox"]:checked::before {
+	content: "";
+	float: none;
+	display: block;
+	width: 5px;
+	height: 10px;
+	margin: -2px 0 0;
+	border: solid #fff;
+	border-width: 0 2px 2px 0;
+	transform: rotate(45deg);
+}
+
+/* Anel de foco só no teclado (o WP mostra um anel azul também no clique). */
+.login input[type="checkbox"]:focus {
+	box-shadow: none;
+	outline: none;
+}
+
+.login input[type="checkbox"]:focus-visible {
+	border-color: var(--brand);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 35%, transparent);
+	outline: none;
+}
+
+/* Botões no estilo do site (pílula com brilho). */
+.login .button-primary,
+.login .language-switcher .button {
+	min-height: 44px;
+	padding: 0 1.4rem;
+	font-size: 0.95rem;
+	font-weight: 600;
+	color: #fff;
+	text-shadow: none;
+	background: var(--brand);
+	border: 0;
+	border-radius: 999px;
+	box-shadow: 0 10px 24px color-mix(in srgb, var(--brand) 35%, transparent);
+	transition: filter 0.2s, transform 0.2s;
+}
+
+.login .button-primary:hover,
+.login .button-primary:focus,
+.login .language-switcher .button:hover {
+	color: #fff;
+	background: var(--brand);
+	filter: brightness(1.1);
+	box-shadow: 0 10px 24px color-mix(in srgb, var(--brand) 45%, transparent);
+}
+
+.login .button-primary:active {
+	transform: scale(0.98);
+}
+
+.login .button-primary:focus-visible {
+	outline: 2px solid var(--highlight);
+	outline-offset: 3px;
+}
+
+.login .submit {
+	margin-top: 0.25rem;
+}
+
+/* Avisos (desconectado, erro, sucesso). */
+.login .message,
+.login .notice,
+.login .success,
+.login #login_error {
+	margin: 0 0 1rem;
+	padding: 0.85rem 1rem;
+	color: rgb(255 255 255 / 0.9);
+	background: rgb(255 255 255 / 0.05);
+	border: 1px solid var(--line);
+	border-left: 4px solid var(--brand);
+	border-radius: 16px;
+	box-shadow: none;
+}
+
+.login #login_error,
+.login .notice-error {
+	border-left-color: var(--accent);
+	background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.login .success,
+.login .notice-success {
+	border-left-color: var(--highlight);
+}
+
+.login .message a,
+.login #login_error a {
+	color: #fff;
+}
+
+/* Links abaixo do formulário. */
+.login #nav,
+.login #backtoblog {
+	margin: 1rem 0 0;
+	padding: 0 0.25rem;
+	text-align: center;
+	font-size: 0.875rem;
+}
+
+.login #nav a,
+.login #backtoblog a,
+.login .privacy-policy-page-link a {
+	color: var(--muted);
+	text-decoration: none;
+	transition: color 0.2s;
+}
+
+.login #nav a:hover,
+.login #backtoblog a:hover,
+.login .privacy-policy-page-link a:hover {
+	color: #fff;
+}
+
+.login .privacy-policy-page-link {
+	margin: 1.5rem 0 0;
+	text-align: center;
+	font-size: 0.8rem;
+}
+
+.login .privacy-policy-page-link a {
+	text-decoration: underline;
+	text-underline-offset: 4px;
+	text-decoration-color: color-mix(in srgb, var(--brand) 70%, transparent);
+}
+
+/* Seletor de idioma. */
+.language-switcher {
+	margin-top: 1.5rem;
+}
+
+.language-switcher label .dashicons {
+	color: var(--muted);
+}
+
+.language-switcher label {
+	color: var(--muted);
+	font-size: 0.8rem;
+}
+
+/* Mesma especificidade dos estados do WP (.wp-core-ui select:focus etc.), que deixam o texto escuro e a borda azul. */
+.login .language-switcher select,
+.login .language-switcher select:hover,
+.login .language-switcher select:focus,
+.login .language-switcher select:active {
+	min-height: 40px;
+	padding: 0 2.25rem 0 1rem;
+	font-size: 0.875rem;
+	line-height: 38px;
+	color: #fff;
+	background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 7.5l5 5 5-5' fill='none' stroke='%23ffffff' stroke-opacity='.6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 0.8rem center / 16px 16px;
+	border: 1px solid var(--line);
+	border-radius: 999px;
+	box-shadow: none;
+	outline: none;
+	cursor: pointer;
+}
+
+.login .language-switcher select:hover {
+	border-color: rgb(255 255 255 / 0.25);
+}
+
+.login .language-switcher select:focus {
+	border-color: var(--brand);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 30%, transparent);
+}
+
+.login .language-switcher select option {
+	color: #fff;
+	background: var(--surface);
+}
+
+.login .language-switcher .button {
+	min-height: 40px;
+	box-shadow: none;
+	background: rgb(255 255 255 / 0.08);
+}
+
+/* Caixa "Membro? Entre com o Spotify" (inc/login.php). */
+.spotinder-member-login {
+	margin: 0 0 1rem;
+	padding: 1.25rem;
+	text-align: center;
+	background: linear-gradient(135deg, color-mix(in srgb, var(--brand) 22%, var(--surface)), var(--surface));
+	border: 1px solid rgb(255 255 255 / 0.08);
+	border-radius: 24px;
+}
+
+.spotinder-member-login p {
+	margin: 0 0 0.85rem;
+	font-size: 0.9rem;
+	color: rgb(255 255 255 / 0.75);
+}
+
+.spotinder-member-login .spotinder-spotify-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.7rem 1.4rem;
+	font-weight: 600;
+	color: #fff;
+	text-decoration: none;
+	background: var(--brand);
+	border-radius: 999px;
+	box-shadow: 0 10px 24px color-mix(in srgb, var(--brand) 35%, transparent);
+}
+
+.spotinder-member-login .spotinder-spotify-btn:hover {
+	filter: brightness(1.1);
+}
+
+.spotinder-member-login .spotinder-spotify-btn svg {
+	width: 20px;
+	height: 20px;
+}
+
+.spotinder-staff-note {
+	margin: 1rem 0 0.75rem;
+	font-size: 0.75rem;
+	text-align: center;
+	text-transform: uppercase;
+	letter-spacing: 0.18em;
+	color: rgb(255 255 255 / 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.login .button-primary {
+		transition: none;
+	}
+}

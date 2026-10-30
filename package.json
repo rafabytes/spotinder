@@ -1,0 +1,30 @@
+{
+  "name": "spotinder-theme",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Tema WordPress do Spotinder — WordPress + Parcel + TailwindCSS + Swup + React",
+  "scripts": {
+    "dev": "node scripts/parcel.mjs watch src/js/app.js src/css/app.css src/css/login.css --dist-dir dist --no-hmr --no-content-hash",
+    "build": "node scripts/parcel.mjs build src/js/app.js src/css/app.css src/css/login.css --dist-dir dist --no-content-hash --no-source-maps",
+    "icons": "node scripts/icons.mjs",
+    "clean": "rimraf dist .parcel-cache .parcel-tmp"
+  },
+  "browserslist": "> 0.5%, last 2 versions, not dead",
+  "dependencies": {
+    "@fontsource-variable/outfit": "^5.2.5",
+    "@swup/a11y-plugin": "^5.0.0",
+    "@swup/body-class-plugin": "^3.3.0",
+    "@swup/head-plugin": "^2.3.0",
+    "@swup/preload-plugin": "^3.2.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "swup": "^4.8.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.0",
+    "parcel": "^2.15.0",
+    "puppeteer-core": "^25.16.0",
+    "rimraf": "^6.0.1",
+    "tailwindcss": "^4.1.0"
+  }
+}

@@ -1,0 +1,346 @@
+@import "tailwindcss" source(none);
+@import "@fontsource-variable/outfit";
+
+/* Onde o Tailwind procura classes. */
+@source "../../*.php";
+@source "../../template-parts";
+@source "../../templates";
+@source "../../inc";
+@source "../js";
+
+/* Cores e fonte. As cores da marca vêm do painel via variáveis CSS (inc/setup.php). */
+@theme {
+	--font-sans: "Outfit Variable", ui-sans-serif, system-ui, sans-serif;
+	--color-ink: #0b0a10;
+	--color-surface: #15131d;
+	--color-surface-2: #1e1b29;
+}
+
+@theme inline {
+	--color-brand: var(--sp-primary, #7c3aed);
+	--color-accent: var(--sp-accent, #ff4d6d);
+	--color-highlight: var(--sp-highlight, #c6ff3d);
+}
+
+/* ---------- Base ---------- */
+@layer base {
+	html {
+		scroll-behavior: smooth;
+		color-scheme: dark;
+	}
+
+	:focus-visible {
+		outline: 2px solid var(--color-highlight);
+		outline-offset: 3px;
+		border-radius: 6px;
+	}
+
+	button:not(:disabled),
+	[role="button"]:not(:disabled) {
+		cursor: pointer;
+	}
+}
+
+/* ---------- Componentes ---------- */
+@layer components {
+	.container-site {
+		@apply mx-auto w-full max-w-7xl px-5 sm:px-8;
+	}
+
+	.card {
+		@apply rounded-3xl border border-white/[0.07] bg-surface;
+	}
+
+	.eyebrow {
+		@apply text-xs font-semibold uppercase tracking-[0.2em] text-highlight;
+	}
+
+	.eyebrow-pill {
+		@apply inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm text-white/80 backdrop-blur;
+	}
+
+	.section-title {
+		@apply text-balance text-3xl font-semibold leading-tight tracking-tight text-white md:text-5xl;
+	}
+
+	.btn-primary,
+	.btn-accent,
+	.btn-light,
+	.btn-ghost,
+	.btn-danger {
+		@apply inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition duration-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50;
+	}
+
+	.btn-primary {
+		@apply bg-brand text-white shadow-lg shadow-brand/30 hover:brightness-110;
+	}
+
+	.btn-accent {
+		@apply bg-accent text-white shadow-lg shadow-accent/30 hover:brightness-110;
+	}
+
+	.btn-light {
+		@apply bg-white text-ink hover:bg-white/90;
+	}
+
+	.btn-ghost {
+		@apply border border-white/10 bg-white/5 text-white/85 hover:bg-white/10 hover:text-white;
+	}
+
+	.btn-danger {
+		@apply border border-rose-400/30 bg-rose-500/10 text-rose-200 hover:bg-rose-500/20;
+	}
+
+	.btn-lg {
+		@apply px-7 py-3.5 text-base;
+	}
+
+	.btn-icon {
+		@apply grid size-10 place-items-center rounded-full border border-white/10 bg-white/5 text-white/80 transition hover:bg-white/10;
+	}
+
+	.chip {
+		@apply inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 text-sm text-white/80 transition hover:border-white/25 hover:text-white;
+	}
+
+	.chip-active {
+		@apply border-brand bg-brand/20 text-white;
+	}
+
+	.field {
+		@apply w-full rounded-2xl border border-white/10 bg-ink/60 px-4 py-3 text-white placeholder:text-white/30 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30;
+	}
+
+	.label {
+		@apply mb-1.5 block text-sm font-medium text-white/80;
+	}
+
+	.loader {
+		@apply inline-block size-8 animate-spin rounded-full border-2 border-white/15 border-t-brand;
+	}
+
+	/* Menus do WordPress. */
+	.nav-primary .menu {
+		@apply flex items-center gap-1;
+	}
+	.nav-primary .menu a {
+		@apply rounded-full px-3.5 py-2 text-sm text-white/65 transition hover:bg-white/5 hover:text-white;
+	}
+	.nav-primary .current-menu-item > a,
+	.nav-primary a[aria-current="page"] {
+		@apply bg-white/5 text-white;
+	}
+	.nav-mobile .menu {
+		@apply grid gap-1;
+	}
+	.nav-mobile .menu a {
+		@apply block rounded-2xl px-4 py-3 text-white/80 hover:bg-white/5;
+	}
+	.footer-menu a {
+		@apply text-white/55 transition hover:text-white;
+	}
+
+	/* Conteúdo editorial (páginas legais, posts). */
+	.prose-site {
+		@apply space-y-5 leading-relaxed text-white/75;
+	}
+	.prose-site h2 {
+		@apply scroll-mt-24 pt-6 text-2xl font-semibold text-white;
+	}
+	.prose-site h3 {
+		@apply pt-2 text-lg font-semibold text-white;
+	}
+	.prose-site a {
+		@apply text-white underline decoration-brand decoration-2 underline-offset-4 hover:decoration-accent;
+	}
+	.prose-site ul {
+		@apply list-disc space-y-2 pl-5 marker:text-brand;
+	}
+	.prose-site ol {
+		@apply list-decimal space-y-2 pl-5;
+	}
+	.prose-site strong {
+		@apply font-semibold text-white;
+	}
+	.prose-site code {
+		@apply rounded-md bg-white/10 px-1.5 py-0.5 text-sm text-highlight;
+	}
+	.prose-site table {
+		@apply w-full overflow-hidden rounded-2xl border border-white/10 text-left text-sm;
+	}
+	.prose-site th {
+		@apply bg-white/5 px-4 py-3 font-semibold text-white;
+	}
+	.prose-site td {
+		@apply border-t border-white/5 px-4 py-3 align-top;
+	}
+	.prose-site blockquote {
+		@apply border-l-2 border-accent pl-5 text-white;
+	}
+
+	/* Paginação do WP. */
+	.nav-links {
+		@apply flex flex-wrap gap-2;
+	}
+	.nav-links .page-numbers {
+		@apply grid min-w-10 place-items-center rounded-full border border-white/10 px-3 py-2 text-sm text-white/70;
+	}
+	.nav-links .current {
+		@apply border-brand bg-brand text-white;
+	}
+}
+
+/* ---------- Detalhes visuais ---------- */
+.hero-glow {
+	position: absolute;
+	inset: -20% -10% auto;
+	height: 120%;
+	background:
+		radial-gradient(40% 50% at 75% 30%, rgb(var(--sp-primary-rgb) / 0.35), transparent 70%),
+		radial-gradient(30% 40% at 90% 70%, color-mix(in srgb, var(--color-accent) 30%, transparent), transparent 70%);
+	filter: blur(20px);
+	pointer-events: none;
+}
+
+.campaign-bg {
+	position: absolute;
+	inset: 0;
+	background:
+		radial-gradient(50% 60% at 50% 0%, rgb(var(--sp-primary-rgb) / 0.22), transparent 70%),
+		repeating-linear-gradient(90deg, rgb(255 255 255 / 0.025) 0 1px, transparent 1px 80px);
+	pointer-events: none;
+}
+
+/* Pilha animada do destaque: as posições ficam em data-slot (src/js/ui.js → initHeroDeck). */
+.hero-swipe {
+	transform-origin: 50% 90%;
+	transition:
+		transform 0.75s cubic-bezier(0.2, 0.8, 0.2, 1),
+		opacity 0.75s ease;
+	will-change: transform;
+}
+.hero-swipe[data-slot="0"] { z-index: 6; transform: none; }
+.hero-swipe[data-slot="1"] { z-index: 5; transform: translate(-7%, 14px) rotate(-6deg) scale(0.95); opacity: 0.85; }
+.hero-swipe[data-slot="2"] { z-index: 4; transform: translate(7%, 26px) rotate(6deg) scale(0.9); opacity: 0.6; }
+.hero-swipe:not([data-slot="0"]):not([data-slot="1"]):not([data-slot="2"]) { z-index: 1; transform: translateY(40px) scale(0.84); opacity: 0; }
+.hero-swipe[data-swipe="like"] { transform: translateX(8%) rotate(5deg); }
+.hero-swipe[data-swipe="pass"] { transform: translateX(-8%) rotate(-5deg); }
+.hero-swipe[data-slot="out-like"] { z-index: 7; transform: translate(135%, -30px) rotate(24deg); opacity: 0; }
+.hero-swipe[data-slot="out-pass"] { z-index: 7; transform: translate(-135%, -30px) rotate(-24deg); opacity: 0; }
+.hero-swipe.no-transition { transition: none; }
+
+.hero-stamp {
+	@apply pointer-events-none absolute top-6 z-10 rounded-xl border-4 px-3 py-0.5 text-2xl font-bold uppercase tracking-widest opacity-0 transition-opacity duration-300;
+}
+.hero-stamp-like { @apply right-5 rotate-12 border-emerald-400 bg-ink/40 text-emerald-300; }
+.hero-stamp-pass { @apply left-5 -rotate-12 border-rose-400 bg-ink/40 text-rose-300; }
+.hero-swipe[data-swipe="like"] .hero-stamp-like,
+.hero-swipe[data-slot="out-like"] .hero-stamp-like,
+.hero-swipe[data-swipe="pass"] .hero-stamp-pass,
+.hero-swipe[data-slot="out-pass"] .hero-stamp-pass { opacity: 1; }
+
+.hero-match {
+	@apply pointer-events-none absolute -left-4 bottom-24 z-20 rounded-2xl bg-highlight px-4 py-2 text-lg font-bold text-ink shadow-2xl shadow-black/50;
+	opacity: 0;
+	transform: rotate(-8deg) scale(0.6);
+	transition: opacity 0.3s ease, transform 0.45s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+.hero-match.is-visible { opacity: 1; transform: rotate(-8deg) scale(1); }
+
+.vinyl {
+	display: inline-block;
+	flex-shrink: 0;
+	width: 3.5rem;
+	height: 3.5rem;
+	border-radius: 9999px;
+	background:
+		radial-gradient(circle, var(--color-accent) 0 18%, #111 19% 22%, transparent 23%),
+		repeating-radial-gradient(circle, #111 0 2px, #1c1c1c 2px 4px);
+	box-shadow: 0 6px 20px rgb(0 0 0 / 0.4);
+	animation: spin 4s linear infinite;
+}
+
+.vinyl-lg {
+	width: 8rem;
+	height: 8rem;
+}
+
+.intention-chip {
+	@apply inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-5 py-3 text-base text-white;
+	animation: float 6s ease-in-out infinite;
+	animation-delay: calc(var(--d) * -0.8s);
+}
+
+.equalizer {
+	position: absolute;
+	inset: auto 0 0;
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 6px;
+	height: 60%;
+	padding: 0 2rem;
+	opacity: 0.18;
+}
+
+.equalizer span {
+	flex: 1;
+	border-radius: 9999px 9999px 0 0;
+	background: white;
+	animation: eq 1.4s ease-in-out infinite alternate;
+}
+
+.equalizer span:nth-child(3n) { animation-duration: 1.1s; }
+.equalizer span:nth-child(4n) { animation-duration: 1.7s; }
+.equalizer span:nth-child(5n) { animation-duration: 0.9s; }
+
+@keyframes eq {
+	from { height: 10%; }
+	to { height: 100%; }
+}
+
+@keyframes float {
+	0%, 100% { transform: translateY(0); }
+	50% { transform: translateY(-6px); }
+}
+
+@keyframes pop {
+	0% { transform: scale(0.6); opacity: 0; }
+	70% { transform: scale(1.06); opacity: 1; }
+	100% { transform: scale(1); }
+}
+
+.animate-pop {
+	animation: pop 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+/* Swipe. */
+.swipe-card {
+	touch-action: pan-y;
+	user-select: none;
+	will-change: transform;
+}
+
+.swipe-stamp {
+	@apply pointer-events-none absolute top-8 rounded-xl border-4 px-4 py-1 text-3xl font-bold uppercase tracking-widest;
+}
+
+/* ---------- Swup: transição entre páginas ---------- */
+html.is-changing .transition-fade {
+	transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+html.is-animating .transition-fade {
+	opacity: 0;
+	transform: translateY(10px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}

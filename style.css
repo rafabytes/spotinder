@@ -1,0 +1,14 @@
+/*
+Theme Name: Spotinder
+Theme URI: http://spotinder.local/
+Author: RafaBytes
+Author URI: https://rafabytes.com
+Description: Conecte pessoas pelo gosto musical. Login exclusivo via Spotify, deck de descoberta estilo swipe com os artistas mais ouvidos, matches com playlist em comum, trilha sonora do match, eventos e encontros. Stack: WordPress + Parcel + TailwindCSS + Swup + React. Requer o plugin Advanced Custom Fields PRO para editar os conteúdos pelo painel.
+Version: 1.0.0
+Requires at least: 6.4
+Requires PHP: 8.0
+License: GPL-2.0-or-later
+Text Domain: spotinder
+*/
+
+/* Os estilos reais são gerados pelo Parcel + Tailwind em dist/app.css (fonte em src/css/app.css). */

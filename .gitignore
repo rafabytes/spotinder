@@ -1,0 +1,7 @@
+node_modules/
+.parcel-cache/
+.parcel-tmp/
+*.zip
+*.log
+.DS_Store
+Thumbs.db

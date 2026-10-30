@@ -1,0 +1,9 @@
+---
+# Deploy pelo cPanel (Git Version Control > Manage > Pull or Deploy > Deploy HEAD Commit).
+# Copia o tema para a pasta do WordPress. O dist/ já vai pronto no repositório, então o servidor não precisa de Node.
+# Se o WordPress não estiver em public_html (ex.: subdomínio ou domínio adicional), ajuste DEPLOYPATH.
+deployment:
+  tasks:
+    - export DEPLOYPATH=$HOME/public_html/wp-content/themes/spotinder-theme/
+    - /bin/mkdir -p $DEPLOYPATH
+    - /usr/bin/rsync -a --delete --exclude=.git --exclude=.cpanel.yml --exclude=.gitignore --exclude=.postcssrc --exclude=node_modules --exclude=src --exclude=scripts --exclude=docs --exclude=README.md --exclude=package.json --exclude=package-lock.json ./ $DEPLOYPATH
