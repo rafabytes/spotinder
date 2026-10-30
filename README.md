@@ -38,7 +38,7 @@ npm run build   # build de produção
 
 O `dist/` vai pronto no repositório, então o servidor não precisa de Node. Rode `npm run build` antes de cada commit que mexa em `src/`.
 
-O cPanel clona o repositório fora da pasta pública (em `~/repositories/spotinder`). O `.cpanel.yml` copia o tema para `~/public_html/wp-content/themes/spotinder-theme/` com `rsync --delete`, sem levar `.git`, `src`, `scripts`, `docs` e arquivos do npm. Se o WordPress estiver em outra pasta, ajuste `DEPLOYPATH` no `.cpanel.yml`.
+O cPanel clona o repositório fora da pasta pública (em `~/repositories/spotinder`). O `.cpanel.yml` copia o tema para `~/public_html/spotinder/wp-content/themes/spotinder-theme/` com `rsync --delete --delete-excluded`, sem levar `.git`, `src`, `scripts`, `docs` e arquivos do npm. Se o WordPress mudar de pasta, ajuste `DEPLOYPATH` no `.cpanel.yml`.
 
 As fotos enviadas pelos usuários ficam em `wp-content/uploads/spotinder-photos`, fora do tema. O deploy não as apaga.
 
