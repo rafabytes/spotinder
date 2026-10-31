@@ -125,10 +125,10 @@ function spotinder_seed_legal_summary( $page_id, $which, $force = false ) {
 function spotinder_legal_summaries() {
 	return array(
 		'privacidade' => array(
-			array( '🎧', 'Do Spotify lemos só seus artistas e músicas mais ouvidos e seu nome e foto públicos. Nada de e-mail, playlists privadas ou o que você está ouvindo agora.' ),
-			array( '📸', 'Foto é opcional: use a do Spotify, envie uma ou fique só com as iniciais. Fotos enviadas perdem a localização e outros metadados, e você apaga quando quiser.' ),
+			array( '🎧', 'Você entra com o Google e escolhe seus artistas e músicas favoritos. Da conta Google recebemos só nome e foto pública — nada de e-mail, contatos ou senha.' ),
+			array( '📸', 'Foto é opcional: use a da conta Google, envie uma ou fique só com as iniciais. Fotos enviadas perdem a localização e outros metadados, e você apaga quando quiser.' ),
 			array( '📍', 'Localização é opcional: guardamos só uma região aproximada (~5 km) e o município. A posição exata é arredondada no seu aparelho e nunca é guardada.' ),
-			array( '🔑', 'Não guardamos seus tokens de acesso do Spotify. Cada atualização exige que você autorize de novo.' ),
+			array( '🔑', 'Não guardamos seus tokens de acesso do Google e não temos senhas para vazar.' ),
 			array( '👀', 'Outras pessoas veem seu nome, foto (se você escolher uma), cidade ou região aproximada, bio, intenções e artistas. Suas redes sociais só aparecem para quem deu match com você.' ),
 			array( '🚫', 'Não vendemos dados, não fazemos publicidade direcionada e não usamos seus dados para treinar inteligência artificial.' ),
 			array( '🗑️', 'Você exporta ou apaga tudo em Perfil > Privacidade, na hora. Contas inativas são apagadas automaticamente.' ),
@@ -164,7 +164,7 @@ function spotinder_seed_options( $force = false ) {
 	}
 
 	foreach ( spotinder_defaults() as $name => $value ) {
-		if ( in_array( $name, array( 'spotify_client_id', 'spotify_client_secret', 'logo', 'spotify_logo', 'campaign_story', 'share_image' ), true ) ) {
+		if ( in_array( $name, array( 'google_client_id', 'google_client_secret', 'google_redirect_uri', 'spotify_client_id', 'spotify_client_secret', 'logo', 'spotify_logo', 'campaign_story', 'share_image' ), true ) ) {
 			continue;
 		}
 		if ( ! $force && null !== get_field( $name, 'option', false ) ) {
@@ -500,7 +500,7 @@ function spotinder_seed_demo_users() {
 				'version' => (string) spotinder_opt( 'policy_version' ),
 			)
 		);
-		spotinder_save_tops( $user_id, $artist_rows, $track_rows );
+		spotinder_save_music( $user_id, $artist_rows, $track_rows );
 		spotinder_touch( $user_id, true );
 		++$count;
 	}

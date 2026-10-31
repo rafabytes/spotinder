@@ -1,30 +1,30 @@
-<p>Esta política explica, em linguagem direta, quais dados o [spotinder_opcao campo="brand_name"] usa, por quê, quem vê o quê e como você controla tudo. Ela segue a Lei Geral de Proteção de Dados (Lei 13.709/2018 — LGPD), o Marco Civil da Internet (Lei 12.965/2014) e a <a href="https://developer.spotify.com/policy" target="_blank" rel="noopener">Developer Policy do Spotify</a>. Versão: [spotinder_opcao campo="policy_version"].</p>
+<p>Esta política explica, em linguagem direta, quais dados o [spotinder_opcao campo="brand_name"] usa, por quê, quem vê o quê e como você controla tudo. Ela segue a Lei Geral de Proteção de Dados (Lei 13.709/2018 — LGPD), o Marco Civil da Internet (Lei 12.965/2014) e as regras de uso do Google e do Spotify. Versão: [spotinder_opcao campo="policy_version"].</p>
 
 <h2>1. Quem é responsável pelos seus dados</h2>
 <p>O controlador dos dados é <strong>[preencher: razão social e CNPJ]</strong>, com sede em [preencher: endereço]. Nosso encarregado de proteção de dados (DPO) pode ser contatado em <strong>[preencher: e-mail do encarregado]</strong>.</p>
-<p>O [spotinder_opcao campo="brand_name"] é um projeto independente. Não temos afiliação, patrocínio ou endosso do Spotify. O uso da sua conta Spotify continua regido pelos termos e pela política de privacidade do próprio Spotify.</p>
+<p>O [spotinder_opcao campo="brand_name"] é um projeto independente. Não temos afiliação, patrocínio ou endosso do Spotify nem do Google. O uso da sua conta Google continua regido pelos termos e pela política de privacidade do próprio Google.</p>
 
 <h2>2. Quais dados coletamos</h2>
-<h3>2.1 Do Spotify, quando você entra</h3>
-<p>Pedimos ao Spotify apenas a permissão <code>user-top-read</code>. Com ela, lemos:</p>
+<h3>2.1 Do Google, quando você entra</h3>
+<p>Você entra com sua conta Google. Pedimos ao Google apenas as permissões <code>openid</code> e <code>profile</code>. Com elas, recebemos:</p>
 <ul>
-	<li>seu <strong>ID de usuário</strong> do Spotify, seu <strong>nome de exibição</strong> e o link público do seu perfil;</li>
-	<li>o <strong>endereço da foto pública</strong> do seu perfil do Spotify, se houver. Guardamos só o link — a imagem continua hospedada pelo Spotify — e ela só aparece no app se você escolher usá-la (veja 2.5);</li>
-	<li>até <strong>30 artistas mais ouvidos</strong> nos últimos meses (nome, ID, imagem pública do artista, gêneros e link para o Spotify);</li>
-	<li>até <strong>50 músicas mais ouvidas</strong> nos últimos meses (nome, artistas, álbum, capa e link para o Spotify).</li>
+	<li>um <strong>identificador da sua conta</strong> Google, que serve só para reconhecer você nos próximos acessos;</li>
+	<li>seu <strong>nome</strong>, usado como sugestão de nome de exibição (você pode trocar no cadastro);</li>
+	<li>o <strong>endereço da foto pública</strong> da sua conta Google, se houver. Guardamos só o link — a imagem continua hospedada pelo Google — e ela só aparece no app se você escolher usá-la (veja 2.5).</li>
 </ul>
-<p><strong>Não acessamos</strong>: seu e-mail, data de nascimento, país, tipo de assinatura, suas playlists, sua biblioteca, seu histórico completo, o que você está ouvindo agora ou seus seguidores.</p>
-<p>A cada novo login (ou quando você clica em "Atualizar meus artistas"), essa lista é <strong>substituída</strong> pela atual. Não guardamos histórico do que você ouvia antes.</p>
+<p><strong>Não pedimos nem recebemos</strong>: seu e-mail, telefone, data de nascimento, contatos, agenda, arquivos ou qualquer outro dado da sua conta Google.</p>
 
-<h3>2.2 Permissão opcional para salvar playlists</h3>
-<p>Se — e somente se — você clicar em "Salvar no Spotify" em um match, pedimos a permissão <code>playlist-modify-private</code>, usada uma única vez para criar uma playlist <strong>privada</strong> na sua conta com as músicas em comum. Não lemos suas playlists existentes.</p>
+<h3>2.2 Artistas e músicas que você escolhe</h3>
+<p>No cadastro, você escolhe seus <strong>artistas favoritos</strong> (de [spotinder_opcao campo="min_artists"] a [spotinder_opcao campo="max_artists"]) e, se quiser, até [spotinder_opcao campo="max_tracks"] <strong>músicas favoritas</strong>, buscando no catálogo público do Spotify. Também dá para adicionar um artista só pelo nome, quando ele não está no catálogo. Guardamos, na ordem que você escolheu, o nome, o ID no catálogo, a imagem pública, os gêneros e o link para o Spotify de cada artista, e o nome, os artistas, o álbum, a capa e o link de cada música.</p>
+<p>A busca é feita pelo nosso servidor com a credencial do próprio [spotinder_opcao campo="brand_name"]: <strong>você não conecta sua conta do Spotify</strong> e nada sobre você é enviado ao Spotify — só o termo buscado. Você pode mudar sua seleção quando quiser em <em>Perfil</em>; a nova lista <strong>substitui</strong> a anterior, sem histórico.</p>
 
-<h3>2.3 Não guardamos suas credenciais do Spotify</h3>
-<p>Não existe senha no [spotinder_opcao campo="brand_name"]. Os códigos de acesso (tokens) que o Spotify nos envia são usados durante alguns segundos, no momento em que você se conecta, e <strong>descartados</strong>. Não armazenamos tokens de acesso nem de renovação. Por isso, nunca acessamos sua conta Spotify sem que você esteja autorizando naquele momento.</p>
+<h3>2.3 Não guardamos suas credenciais do Google</h3>
+<p>Não existe senha no [spotinder_opcao campo="brand_name"]. Os códigos de acesso (tokens) que o Google nos envia são usados durante alguns segundos, no momento em que você entra, e <strong>descartados</strong>. Não armazenamos tokens de acesso nem de renovação. Por isso, nunca acessamos sua conta Google fora do momento em que você entra.</p>
 
 <h3>2.4 Dados que você informa</h3>
 <ul>
-	<li>nome de exibição (pode ser diferente do Spotify), cidade (opcional), bio curta (opcional);</li>
+	<li>nome de exibição (pode ser diferente do nome da conta Google), cidade (opcional), bio curta (opcional);</li>
+	<li>seus <strong>artistas e músicas favoritos</strong> (veja 2.2);</li>
 	<li>suas <strong>intenções</strong> (ex.: amizade, companhia para shows, montar banda);</li>
 	<li>suas <strong>redes sociais</strong> (opcionais), exibidas apenas para seus matches;</li>
 	<li>seus consentimentos, com data, hora e versão desta política.</li>
@@ -34,7 +34,7 @@
 <p>Você escolhe entre três opções, e pode mudar a qualquer momento em <em>Perfil</em>:</p>
 <ul>
 	<li><strong>Sem foto</strong> (padrão): mostramos apenas as iniciais do seu nome;</li>
-	<li><strong>Foto do Spotify</strong>: usamos a foto pública do seu perfil do Spotify;</li>
+	<li><strong>Foto do Google</strong>: usamos a foto pública da sua conta Google;</li>
 	<li><strong>Foto enviada</strong>: você envia uma imagem (JPG, PNG ou WebP, até 5 MB).</li>
 </ul>
 <p>Quando você envia uma foto, nós a recortamos em formato quadrado e a <strong>regravamos sem metadados</strong> — isso remove, por exemplo, a localização GPS, o modelo do celular e a data em que foi tirada. O arquivo original é descartado. A foto fica guardada com um nome aleatório, fora da biblioteca pública de mídia do site.</p>
@@ -65,26 +65,26 @@
 <table>
 	<thead><tr><th>Finalidade</th><th>Dados</th><th>Base legal (LGPD)</th></tr></thead>
 	<tbody>
-		<tr><td>Criar e manter sua conta, fazer login</td><td>ID e nome do Spotify</td><td>Execução de contrato (art. 7º, V)</td></tr>
-		<tr><td>Mostrar seu perfil musical a outras pessoas e calcular a compatibilidade</td><td>Artistas, músicas, intenções, cidade, bio</td><td>Consentimento (art. 7º, I), dado de forma destacada no cadastro</td></tr>
-		<tr><td>Exibir sua foto no seu cartão (se você escolher uma)</td><td>Foto do Spotify ou foto enviada</td><td>Consentimento (art. 7º, I), dado no momento em que você escolhe a foto</td></tr>
+		<tr><td>Criar e manter sua conta, fazer login</td><td>Identificador e nome da conta Google</td><td>Execução de contrato (art. 7º, V)</td></tr>
+		<tr><td>Mostrar seu perfil musical a outras pessoas e calcular a compatibilidade</td><td>Artistas e músicas escolhidos, intenções, cidade, bio</td><td>Consentimento (art. 7º, I), dado de forma destacada no cadastro</td></tr>
+		<tr><td>Exibir sua foto no seu cartão (se você escolher uma)</td><td>Foto do Google ou foto enviada</td><td>Consentimento (art. 7º, I), dado no momento em que você escolhe a foto</td></tr>
 		<tr><td>Mostrar quem está perto e filtrar o deck por distância (se você ativar)</td><td>Região aproximada (área de ~5 km e município)</td><td>Consentimento (art. 7º, I), dado ao ativar a localização</td></tr>
 		<tr><td>Mostrar suas redes sociais aos seus matches</td><td>Redes sociais</td><td>Consentimento (art. 7º, I)</td></tr>
-		<tr><td>Playlist em comum e trilha sonora do match</td><td>Músicas mais ouvidas de vocês dois</td><td>Consentimento (art. 7º, I)</td></tr>
+		<tr><td>Playlist em comum e trilha sonora do match</td><td>Músicas favoritas de vocês dois</td><td>Consentimento (art. 7º, I)</td></tr>
 		<tr><td>Eventos, presenças e convites</td><td>Presenças, convites</td><td>Execução de contrato (art. 7º, V)</td></tr>
 		<tr><td>Segurança, moderação e prevenção de golpes</td><td>Denúncias, bloqueios, dados de uso</td><td>Legítimo interesse (art. 7º, IX), com avaliação de impacto e respeito às suas expectativas</td></tr>
 		<tr><td>Guarda de registros de acesso</td><td>IP, data e hora</td><td>Cumprimento de obrigação legal (art. 7º, II; Marco Civil, art. 15)</td></tr>
 	</tbody>
 </table>
-<p><strong>Não usamos seus dados para publicidade</strong>, não vendemos dados, não criamos perfis para marketing e <strong>não usamos nada disso para treinar inteligência artificial</strong> — o que também é proibido pela Developer Policy do Spotify.</p>
+<p><strong>Não usamos seus dados para publicidade</strong>, não vendemos dados, não criamos perfis para marketing e <strong>não usamos nada disso para treinar inteligência artificial</strong>.</p>
 <p>Gosto musical não é, por si só, um dado sensível. Mesmo assim, ele pode sugerir aspectos pessoais (como religião ou origem). Por isso, não fazemos nenhuma inferência sobre essas características e não usamos gêneros musicais para nada além de mostrar afinidades.</p>
 <p>O mesmo vale para a foto: uma imagem pode revelar características pessoais (como origem racial ou étnica), então ela é apenas exibida, nunca analisada, classificada ou usada para filtrar perfis.</p>
 
 <h2>4. Como a compatibilidade é calculada</h2>
 <p>Queremos que você entenda por que alguém aparece no seu deck (LGPD, art. 20). A porcentagem considera somente:</p>
 <ul>
-	<li><strong>artistas em comum</strong> — quanto mais alto o artista estiver no top dos dois, mais pesa;</li>
-	<li><strong>músicas em comum</strong> no top dos dois;</li>
+	<li><strong>artistas em comum</strong> — quanto mais perto do topo da lista de favoritos dos dois, mais pesa;</li>
+	<li><strong>músicas em comum</strong> entre as favoritas dos dois;</li>
 	<li><strong>gêneros em comum</strong> entre os artistas favoritos (peso pequeno).</li>
 </ul>
 <p>Na ordenação do deck, intenções iguais dão um pequeno empurrão; se vocês dois ativaram a localização aproximada, quem está a até 50 km também recebe um pequeno empurrão, e você pode limitar a distância máxima. <strong>Não usamos</strong> idade, gênero, sua foto, aparência, localização exata, renda ou qualquer dado sensível. Perfis inativos há mais de [spotinder_opcao campo="inactive_hide_days"] dias deixam de aparecer. Você pode pedir a revisão de qualquer decisão automatizada pelo e-mail do encarregado.</p>
@@ -93,9 +93,9 @@
 <table>
 	<thead><tr><th>Quem</th><th>O que vê</th></tr></thead>
 	<tbody>
-		<tr><td>Qualquer membro, no deck</td><td>Nome de exibição, foto (se você escolheu uma), cidade ou região aproximada com a distância em faixas (se você ativou a localização), bio, intenções, até [spotinder_opcao campo="top_artists_shown"] artistas mais ouvidos, principais gêneros, porcentagem de compatibilidade e artistas em comum.</td></tr>
-		<tr><td>Seus matches</td><td>Tudo acima, mais suas <strong>redes sociais</strong>, a <strong>playlist em comum</strong> (que revela parte das suas músicas mais ouvidas), a trilha sonora do match, convites e — se você permitir — os eventos em que marcou presença.</td></tr>
-		<tr><td>Ninguém</td><td>Seus passes, quem você curtiu sem match, quem você bloqueou ou denunciou, seu ID do Spotify e seus consentimentos.</td></tr>
+		<tr><td>Qualquer membro, no deck</td><td>Nome de exibição, foto (se você escolheu uma), cidade ou região aproximada com a distância em faixas (se você ativou a localização), bio, intenções, até [spotinder_opcao campo="top_artists_shown"] artistas favoritos, principais gêneros, porcentagem de compatibilidade e artistas em comum.</td></tr>
+		<tr><td>Seus matches</td><td>Tudo acima, mais suas <strong>redes sociais</strong>, a <strong>playlist em comum</strong> (feita com as suas músicas favoritas), a trilha sonora do match, convites e — se você permitir — os eventos em que marcou presença.</td></tr>
+		<tr><td>Ninguém</td><td>Seus passes, quem você curtiu sem match, quem você bloqueou ou denunciou, o identificador da sua conta Google e seus consentimentos.</td></tr>
 		<tr><td>Visitantes e buscadores</td><td>Nada. Perfis não têm página pública e as páginas do app não são indexadas.</td></tr>
 	</tbody>
 </table>
@@ -106,20 +106,21 @@
 
 <h2>7. Compartilhamento com terceiros</h2>
 <ul>
-	<li><strong>Spotify</strong>: recebe as solicitações feitas em seu nome quando você se conecta ou salva uma playlist. Os players de música exibidos no site são do próprio Spotify e, quando você dá play, o Spotify pode registrar essa interação conforme a política dele.</li>
+	<li><strong>Google</strong>: autentica você quando você entra. O Google fica sabendo que você usou sua conta para entrar no [spotinder_opcao campo="brand_name"], conforme a política dele.</li>
+	<li><strong>Spotify</strong>: recebe os termos que você digita na busca de artistas e músicas, sem nenhum dado seu. Os players de música exibidos no site são do próprio Spotify e, quando você dá play, o Spotify pode registrar essa interação conforme a política dele.</li>
 	<li><strong>Hospedagem</strong>: [preencher: nome do provedor e país], que armazena o site e o banco de dados.</li>
 	<li><strong>Autoridades</strong>: somente mediante ordem judicial ou obrigação legal.</li>
 </ul>
 <p>Não compartilhamos dados com anunciantes, corretores de dados ou outros apps.</p>
 
 <h2>8. Transferência internacional</h2>
-<p>O Spotify processa dados fora do Brasil. Ao conectar sua conta, você já se relaciona diretamente com o Spotify. Se nossa hospedagem estiver fora do Brasil, a transferência ocorre com as garantias do art. 33 da LGPD (cláusulas contratuais e/ou países com proteção adequada).</p>
+<p>O Google processa dados fora do Brasil. Ao entrar com sua conta Google, você já se relaciona diretamente com o Google. Se nossa hospedagem estiver fora do Brasil, a transferência ocorre com as garantias do art. 33 da LGPD (cláusulas contratuais e/ou países com proteção adequada).</p>
 
 <h2>9. Por quanto tempo guardamos</h2>
 <ul>
 	<li><strong>Conta ativa</strong>: enquanto você usar o serviço.</li>
 	<li><strong>Inatividade</strong>: contas sem acesso há mais de [spotinder_opcao campo="inactive_delete_days"] dias são <strong>apagadas automaticamente</strong>, com todos os dados.</li>
-	<li><strong>Dados do Spotify</strong>: substituídos a cada login; não mantemos histórico.</li>
+	<li><strong>Artistas e músicas</strong>: só a seleção atual é guardada; ao mudar, a anterior é substituída, sem histórico.</li>
 	<li><strong>Região aproximada</strong>: só a mais recente é guardada (sem histórico); apagada na hora ao desativar a localização ou excluir a conta.</li>
 	<li><strong>Foto enviada</strong>: apagada na hora quando você troca de foto, escolhe "Sem foto" ou exclui a conta. A moderação também pode removê-la se violar os Termos.</li>
 	<li><strong>Denúncias contra uma conta</strong>: mantidas até 6 meses após o encerramento do caso, para proteger a comunidade. Denúncias feitas por você são anonimizadas quando você apaga sua conta.</li>
@@ -130,27 +131,27 @@
 <p>Pela LGPD (art. 18), você pode, a qualquer momento e de graça:</p>
 <ul>
 	<li><strong>acessar e levar seus dados</strong>: em <em>Perfil &gt; Privacidade &gt; Baixar meus dados</em> (arquivo JSON completo);</li>
-	<li><strong>corrigir</strong>: edite seu perfil; artistas e músicas são atualizados reconectando o Spotify;</li>
+	<li><strong>corrigir</strong>: edite seu perfil, inclusive seus artistas e músicas, quando quiser;</li>
 	<li><strong>revogar consentimentos</strong>: pause o perfil, remova a foto, desative a localização, remova redes sociais ou apague a conta;</li>
 	<li><strong>eliminar tudo</strong>: em <em>Perfil &gt; Privacidade &gt; Apagar minha conta</em>. A exclusão é imediata e irreversível;</li>
 	<li><strong>saber com quem compartilhamos</strong> e <strong>pedir revisão de decisões automatizadas</strong>: escreva para o encarregado.</li>
 </ul>
 <p>Respondemos solicitações em até 15 dias. Você também pode reclamar à Autoridade Nacional de Proteção de Dados (<a href="https://www.gov.br/anpd" target="_blank" rel="noopener">ANPD</a>).</p>
 
-<h2>11. Como desconectar o Spotify</h2>
-<p>A forma mais completa é <strong>apagar sua conta aqui</strong>: assim que você confirma, apagamos todos os seus dados, como exige a Developer Policy do Spotify.</p>
-<p>Você também pode remover o acesso em <a href="https://www.spotify.com/account/apps/" target="_blank" rel="noopener">spotify.com/account/apps</a>. Como não guardamos tokens, não somos avisados quando você faz isso. Nesse caso, seus dados continuam aqui até você apagar a conta ou até a exclusão automática por inatividade. Por isso, recomendamos apagar a conta aqui primeiro.</p>
+<h2>11. Como desconectar sua conta Google</h2>
+<p>A forma mais completa é <strong>apagar sua conta aqui</strong>: assim que você confirma, apagamos todos os seus dados.</p>
+<p>Você também pode remover o acesso em <a href="https://myaccount.google.com/connections" target="_blank" rel="noopener">myaccount.google.com/connections</a>. Como não guardamos tokens, não somos avisados quando você faz isso. Nesse caso, seus dados continuam aqui até você apagar a conta ou até a exclusão automática por inatividade. Por isso, recomendamos apagar a conta aqui primeiro.</p>
 
 <h2>12. Idade mínima</h2>
 <p>O serviço é exclusivo para maiores de [spotinder_opcao campo="min_age"] anos. Não é direcionado a crianças ou adolescentes. Se identificarmos uma conta de menor de idade, ela será removida com todos os dados.</p>
 
 <h2>13. Segurança</h2>
-<p>Usamos conexão criptografada (HTTPS), não temos senhas para vazar, não guardamos tokens do Spotify, removemos os metadados das fotos enviadas, arredondamos a localização no seu próprio aparelho, mostramos distâncias só em faixas (o que impede descobrir sua posição por comparação de distâncias), limitamos o acesso administrativo e coletamos o mínimo necessário. Se acontecer um incidente de segurança com risco relevante, avisaremos você e a ANPD (LGPD, art. 48).</p>
+<p>Usamos conexão criptografada (HTTPS), não temos senhas para vazar, não guardamos tokens do Google, removemos os metadados das fotos enviadas, arredondamos a localização no seu próprio aparelho, mostramos distâncias só em faixas (o que impede descobrir sua posição por comparação de distâncias), limitamos o acesso administrativo e coletamos o mínimo necessário. Se acontecer um incidente de segurança com risco relevante, avisaremos você e a ANPD (LGPD, art. 48).</p>
 
 <h2>14. Cookies</h2>
 <ul>
 	<li><strong>Sessão</strong> (essencial): mantém você conectado.</li>
-	<li><strong>Login temporário</strong> (essencial): protege o processo de conexão com o Spotify e expira em 10 minutos.</li>
+	<li><strong>Login temporário</strong> (essencial): protege o processo de entrada com o Google e expira em 10 minutos.</li>
 	<li><strong>Player do Spotify</strong>: quando você usa um player de música, o Spotify pode definir cookies próprios.</li>
 </ul>
 <p>Não usamos cookies de publicidade nem de rastreamento de terceiros.</p>

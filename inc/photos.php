@@ -1,10 +1,10 @@
 <?php
 /**
- * Foto de perfil: nenhuma (padrão), foto do perfil do Spotify ou foto enviada.
+ * Foto de perfil: nenhuma (padrão), foto da conta Google ou foto enviada.
  *
  * Privacidade:
  * - Opt-in: ninguém aparece com foto até escolher uma e aceitar o aviso.
- * - Foto do Spotify: guardamos só o endereço da imagem pública (hospedada pelo Spotify).
+ * - Foto do Google: guardamos só o endereço da imagem pública (hospedada pelo Google).
  * - Foto enviada: recortada em 640×640 e regravada (remove EXIF, inclusive localização GPS);
  *   o original é descartado. Fica fora da Biblioteca de Mídia (não aparece em /wp/v2/media),
  *   com nome aleatório, e é apagada ao trocar/remover a foto ou excluir a conta.
@@ -45,6 +45,11 @@ function spotinder_photo_dir() {
 function spotinder_photo_url( $user_id ) {
 	$source = get_user_meta( $user_id, 'spotinder_photo_source', true );
 
+	if ( 'google' === $source ) {
+		return esc_url_raw( (string) get_user_meta( $user_id, 'spotinder_google_photo', true ) );
+	}
+
+	// Contas antigas, de quando o login era pelo Spotify.
 	if ( 'spotify' === $source ) {
 		return esc_url_raw( (string) get_user_meta( $user_id, 'spotinder_spotify_photo', true ) );
 	}
@@ -101,12 +106,12 @@ function spotinder_set_photo_consent( $user_id, $agreed ) {
  * Define a origem da foto.
  *
  * @param int    $user_id Usuário.
- * @param string $source  none|spotify|upload.
- * @param bool   $consent Aceite do aviso (obrigatório para spotify/upload).
+ * @param string $source  none|google|upload.
+ * @param bool   $consent Aceite do aviso (obrigatório para google/upload).
  * @return true|WP_Error
  */
 function spotinder_set_photo_source( $user_id, $source, $consent ) {
-	if ( ! in_array( $source, array( 'none', 'spotify', 'upload' ), true ) ) {
+	if ( ! in_array( $source, array( 'none', 'google', 'upload' ), true ) ) {
 		return new WP_Error( 'spotinder_photo', 'Opção de foto inválida.', array( 'status' => 400 ) );
 	}
 
@@ -122,15 +127,15 @@ function spotinder_set_photo_source( $user_id, $source, $consent ) {
 		return new WP_Error( 'spotinder_photo', 'Para exibir uma foto, confirme o aviso sobre a foto.', array( 'status' => 400 ) );
 	}
 
-	if ( 'spotify' === $source && ! get_user_meta( $user_id, 'spotinder_spotify_photo', true ) ) {
-		return new WP_Error( 'spotinder_photo', 'Seu perfil do Spotify não tem foto. Envie uma ou atualize seus dados com o Spotify.', array( 'status' => 400 ) );
+	if ( 'google' === $source && ! get_user_meta( $user_id, 'spotinder_google_photo', true ) ) {
+		return new WP_Error( 'spotinder_photo', 'Sua conta Google não tem foto. Envie uma foto ou fique só com as iniciais.', array( 'status' => 400 ) );
 	}
 
 	if ( 'upload' === $source && ! get_user_meta( $user_id, 'spotinder_photo_file', true ) ) {
 		return new WP_Error( 'spotinder_photo', 'Envie uma foto primeiro.', array( 'status' => 400 ) );
 	}
 
-	if ( 'spotify' === $source ) {
+	if ( 'google' === $source ) {
 		spotinder_delete_photo_file( $user_id );
 	}
 

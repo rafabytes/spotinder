@@ -1,6 +1,6 @@
 <?php
 /**
- * Membros: perfil, dados do Spotify, consentimentos, exclusão e exportação.
+ * Membros: perfil, artistas e músicas escolhidos, consentimentos, exclusão e exportação.
  *
  * @package Spotinder
  */
@@ -8,15 +8,22 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Busca o usuário WP vinculado a um ID do Spotify.
- *
- * @param string $spotify_id ID.
+ * Limites da seleção de artistas e músicas do perfil.
  */
-function spotinder_find_member_by_spotify( $spotify_id ) {
+const SPOTINDER_MIN_ARTISTS = 3;
+const SPOTINDER_MAX_ARTISTS = 15;
+const SPOTINDER_MAX_TRACKS  = 10;
+
+/**
+ * Busca o usuário WP vinculado a uma conta Google.
+ *
+ * @param string $google_id ID da conta ("sub" do OpenID Connect).
+ */
+function spotinder_find_member_by_google( $google_id ) {
 	$users = get_users(
 		array(
-			'meta_key'   => 'spotinder_spotify_id',
-			'meta_value' => $spotify_id,
+			'meta_key'   => 'spotinder_google_id',
+			'meta_value' => $google_id,
 			'number'     => 1,
 			'fields'     => 'ID',
 		)
@@ -25,24 +32,24 @@ function spotinder_find_member_by_spotify( $spotify_id ) {
 }
 
 /**
- * Cria ou atualiza o membro a partir do perfil do Spotify.
- * Não guardamos e-mail nem foto: só ID, nome público e link do perfil.
+ * Cria ou atualiza o membro a partir da conta Google.
+ * Não guardamos e-mail: só o ID da conta, o nome e o endereço da foto pública.
  *
- * @param array $me   Resposta de /me.
- * @param array $tops Resultado de spotinder_spotify_fetch_tops().
+ * @param array $account Resultado de spotinder_google_exchange_code().
  * @return int|WP_Error ID do usuário.
  */
-function spotinder_upsert_member( $me, $tops ) {
-	$spotify_id = sanitize_text_field( $me['id'] ?? '' );
-	if ( ! $spotify_id ) {
-		return new WP_Error( 'spotify_profile', 'Perfil do Spotify inválido.' );
+function spotinder_upsert_member( $account ) {
+	$google_id = (string) ( $account['sub'] ?? '' );
+	if ( ! $google_id ) {
+		return new WP_Error( 'google_profile', 'Conta Google inválida.' );
 	}
 
-	$user_id = spotinder_find_member_by_spotify( $spotify_id );
+	$user_id = spotinder_find_member_by_google( $google_id );
 
 	if ( ! $user_id ) {
-		$name    = sanitize_text_field( $me['display_name'] ?? '' );
-		$login   = 'sp_' . substr( preg_replace( '/[^a-z0-9]/', '', strtolower( $spotify_id ) ), 0, 40 );
+		// Só o primeiro nome por padrão; a pessoa pode trocar no cadastro.
+		$name    = $account['given_name'] ? $account['given_name'] : $account['name'];
+		$login   = 'g_' . substr( preg_replace( '/[^0-9]/', '', $google_id ), 0, 40 );
 		$login   = username_exists( $login ) ? $login . '_' . wp_rand( 100, 999 ) : $login;
 		$user_id = wp_insert_user(
 			array(
@@ -56,7 +63,7 @@ function spotinder_upsert_member( $me, $tops ) {
 		if ( is_wp_error( $user_id ) ) {
 			return $user_id;
 		}
-		update_user_meta( $user_id, 'spotinder_spotify_id', $spotify_id );
+		update_user_meta( $user_id, 'spotinder_google_id', $google_id );
 		update_user_meta( $user_id, 'spotinder_visible', 1 );
 		update_user_meta( $user_id, 'spotinder_share_events', 1 );
 	}
@@ -65,26 +72,87 @@ function spotinder_upsert_member( $me, $tops ) {
 		return new WP_Error( 'spotinder_banned', 'Esta conta foi suspensa por violar os Termos de Uso.' );
 	}
 
-	update_user_meta( $user_id, 'spotinder_spotify_url', esc_url_raw( $me['external_urls']['spotify'] ?? '' ) );
-	// Endereço da foto pública do perfil Spotify: só é exibida se a pessoa escolher usá-la.
-	update_user_meta( $user_id, 'spotinder_spotify_photo', spotinder_pick_image( $me['images'] ?? array(), 300 ) );
-	spotinder_save_tops( $user_id, $tops['artists'], $tops['tracks'] );
+	// Endereço da foto pública da conta Google: só é exibida se a pessoa escolher usá-la.
+	update_user_meta( $user_id, 'spotinder_google_photo', $account['picture'] );
 	spotinder_touch( $user_id, true );
 
 	return (int) $user_id;
 }
 
 /**
- * Salva os tops (substitui os anteriores — não acumulamos histórico).
+ * Salva artistas e músicas favoritos (substitui os anteriores, na ordem escolhida).
  *
  * @param int   $user_id Usuário.
  * @param array $artists Artistas normalizados.
  * @param array $tracks  Faixas normalizadas.
  */
-function spotinder_save_tops( $user_id, $artists, $tracks ) {
+function spotinder_save_music( $user_id, $artists, $tracks ) {
 	update_user_meta( $user_id, 'spotinder_top_artists', array_values( $artists ) );
 	update_user_meta( $user_id, 'spotinder_top_tracks', array_values( $tracks ) );
 	update_user_meta( $user_id, 'spotinder_synced_at', current_time( 'mysql' ) );
+}
+
+/**
+ * Confere a seleção enviada pelo navegador. Só IDs são aceitos de lá: nome, imagem
+ * e link vêm do que já estava salvo ou do catálogo do Spotify. Artistas fora do
+ * catálogo (banda local, por exemplo) entram só com o nome.
+ *
+ * @param int   $user_id Usuário.
+ * @param array $artists Itens {id} ou {name}.
+ * @param array $tracks  Itens {id}.
+ * @return array{artists:array,tracks:array}|WP_Error
+ */
+function spotinder_resolve_music( $user_id, $artists, $tracks ) {
+	$saved_artists = array();
+	foreach ( spotinder_get_artists( $user_id ) as $a ) {
+		$saved_artists[ $a['id'] ? $a['id'] : spotinder_akey( $a['name'] ) ] = $a;
+	}
+	$saved_tracks = array_column( spotinder_get_tracks( $user_id ), null, 'id' );
+
+	$out_artists = array();
+	foreach ( array_slice( (array) $artists, 0, SPOTINDER_MAX_ARTISTS ) as $item ) {
+		$id   = sanitize_text_field( (string) ( $item['id'] ?? '' ) );
+		$name = sanitize_text_field( mb_substr( (string) ( $item['name'] ?? '' ), 0, 80 ) );
+
+		if ( $id ) {
+			$artist = $saved_artists[ $id ] ?? spotinder_spotify_catalog_item( 'artist', $id );
+			if ( is_wp_error( $artist ) ) {
+				return new WP_Error( 'spotinder_music', 'Não conseguimos confirmar um dos artistas no catálogo. Tente de novo.', array( 'status' => 400 ) );
+			}
+		} elseif ( $name ) {
+			$artist = $saved_artists[ spotinder_akey( $name ) ] ?? array(
+				'id'     => '',
+				'name'   => $name,
+				'image'  => '',
+				'url'    => '',
+				'genres' => array(),
+			);
+		} else {
+			continue;
+		}
+
+		$out_artists += array( spotinder_akey( $artist['name'] ) => $artist );
+	}
+
+	$out_tracks = array();
+	foreach ( array_slice( (array) $tracks, 0, SPOTINDER_MAX_TRACKS ) as $item ) {
+		$id    = sanitize_text_field( (string) ( $item['id'] ?? '' ) );
+		$track = $saved_tracks[ $id ] ?? spotinder_spotify_catalog_item( 'track', $id );
+		if ( is_wp_error( $track ) ) {
+			return new WP_Error( 'spotinder_music', 'Não conseguimos confirmar uma das músicas no catálogo. Tente de novo.', array( 'status' => 400 ) );
+		}
+		$out_tracks += array( $track['id'] => $track );
+	}
+
+	if ( count( $out_artists ) < SPOTINDER_MIN_ARTISTS ) {
+		/* translators: %d: mínimo de artistas. */
+		return new WP_Error( 'spotinder_music', sprintf( 'Escolha pelo menos %d artistas.', SPOTINDER_MIN_ARTISTS ), array( 'status' => 400 ) );
+	}
+
+	return array(
+		'artists' => array_values( $out_artists ),
+		'tracks'  => array_values( $out_tracks ),
+	);
 }
 
 /**
@@ -264,7 +332,6 @@ function spotinder_member_payload( $user_id, $viewer_id = 0, $context = 'card' )
 			array_slice( $artists, 0, $limit )
 		),
 		'isDemo'     => (bool) get_user_meta( $user_id, 'spotinder_is_demo', true ),
-		'spotifyUrl' => (string) get_user_meta( $user_id, 'spotinder_spotify_url', true ),
 	);
 
 	// Região aproximada (nome do município) e distância em faixas — nunca coordenadas.
@@ -288,7 +355,7 @@ function spotinder_member_payload( $user_id, $viewer_id = 0, $context = 'card' )
 	}
 
 	if ( 'self' === $context ) {
-		$payload['tracks']      = array_slice( spotinder_get_tracks( $user_id ), 0, 20 );
+		$payload['tracks']      = spotinder_get_tracks( $user_id );
 		$payload['socialsRaw']  = (object) array_filter( (array) get_user_meta( $user_id, 'spotinder_socials', true ) );
 		$payload['visible']     = (bool) get_user_meta( $user_id, 'spotinder_visible', true );
 		$payload['shareEvents'] = (bool) get_user_meta( $user_id, 'spotinder_share_events', true );
@@ -303,7 +370,7 @@ function spotinder_member_payload( $user_id, $viewer_id = 0, $context = 'card' )
 		);
 		$payload['maxDistance'] = spotinder_max_distance( $user_id );
 		$payload['photoChoice'] = array(
-			'spotify' => (string) get_user_meta( $user_id, 'spotinder_spotify_photo', true ),
+			'google'  => (string) get_user_meta( $user_id, 'spotinder_google_photo', true ),
 			'upload'  => spotinder_uploaded_photo_url( $user_id ),
 		);
 	}
@@ -334,6 +401,14 @@ function spotinder_update_profile( $user_id, $data ) {
 		if ( $clean_socials && ! $social_agree ) {
 			return new WP_Error( 'spotinder_consent', 'Para exibir redes sociais aos seus matches, confirme o aviso de responsabilidade.', array( 'status' => 400 ) );
 		}
+	}
+
+	if ( isset( $data['artists'] ) || isset( $data['tracks'] ) ) {
+		$music = spotinder_resolve_music( $user_id, (array) ( $data['artists'] ?? array() ), (array) ( $data['tracks'] ?? array() ) );
+		if ( is_wp_error( $music ) ) {
+			return $music;
+		}
+		spotinder_save_music( $user_id, $music['artists'], $music['tracks'] );
 	}
 
 	if ( isset( $data['name'] ) ) {
@@ -391,6 +466,10 @@ function spotinder_update_profile( $user_id, $data ) {
 		$c = $data['consents'];
 		if ( empty( $c['age'] ) || empty( $c['terms'] ) || empty( $c['share'] ) ) {
 			return new WP_Error( 'spotinder_consent', 'Os consentimentos de idade, termos e exibição dos artistas são obrigatórios.', array( 'status' => 400 ) );
+		}
+		if ( count( spotinder_get_artists( $user_id ) ) < SPOTINDER_MIN_ARTISTS ) {
+			/* translators: %d: mínimo de artistas. */
+			return new WP_Error( 'spotinder_music', sprintf( 'Escolha pelo menos %d artistas antes de concluir.', SPOTINDER_MIN_ARTISTS ), array( 'status' => 400 ) );
 		}
 		$now = current_time( 'mysql' );
 		$previous = get_user_meta( $user_id, 'spotinder_consents', true );
@@ -470,8 +549,7 @@ function spotinder_export_member( $user_id ) {
 		'account'     => array(
 			'display_name'   => $user->display_name,
 			'registered'     => $user->user_registered,
-			'spotify_id'     => get_user_meta( $user_id, 'spotinder_spotify_id', true ),
-			'spotify_url'    => get_user_meta( $user_id, 'spotinder_spotify_url', true ),
+			'google_id'      => get_user_meta( $user_id, 'spotinder_google_id', true ),
 			'city'           => get_user_meta( $user_id, 'spotinder_city', true ),
 			'bio'            => get_user_meta( $user_id, 'spotinder_bio', true ),
 			'intentions'     => get_user_meta( $user_id, 'spotinder_intentions', true ),
@@ -479,18 +557,18 @@ function spotinder_export_member( $user_id ) {
 			'visible'        => (bool) get_user_meta( $user_id, 'spotinder_visible', true ),
 			'consents'       => get_user_meta( $user_id, 'spotinder_consents', true ),
 			'last_active'    => gmdate( 'c', (int) get_user_meta( $user_id, 'spotinder_last_active', true ) ),
-			'spotify_synced' => get_user_meta( $user_id, 'spotinder_synced_at', true ),
+			'music_updated'  => get_user_meta( $user_id, 'spotinder_synced_at', true ),
 			'region'         => spotinder_get_region( $user_id ),
 			'max_distance'   => spotinder_max_distance( $user_id ),
 			'photo'          => array(
 				'source'      => get_user_meta( $user_id, 'spotinder_photo_source', true ) ?: 'none',
-				'spotify_url' => get_user_meta( $user_id, 'spotinder_spotify_photo', true ),
+				'google_url'  => get_user_meta( $user_id, 'spotinder_google_photo', true ),
 				'upload_url'  => spotinder_uploaded_photo_url( $user_id ),
 			),
 		),
-		'spotify'     => array(
-			'top_artists' => spotinder_get_artists( $user_id ),
-			'top_tracks'  => spotinder_get_tracks( $user_id ),
+		'music'       => array(
+			'artists' => spotinder_get_artists( $user_id ),
+			'tracks'  => spotinder_get_tracks( $user_id ),
 		),
 		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
 		'swipes'      => $wpdb->get_results( $wpdb->prepare( 'SELECT target_id, action, created_at FROM ' . spotinder_table( 'swipes' ) . ' WHERE user_id = %d', $user_id ), ARRAY_A ),

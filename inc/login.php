@@ -1,7 +1,7 @@
 <?php
 /**
  * Tela de login do WordPress (wp-login.php) com a identidade do site.
- * Membros entram só pelo Spotify; o acesso com senha é da equipe.
+ * Membros entram só pelo Google; o acesso com senha é da equipe.
  *
  * @package Spotinder
  */
@@ -48,10 +48,10 @@ add_filter(
 		}
 
 		$box = sprintf(
-			'<div class="spotinder-member-login"><p>%s</p><a class="spotinder-spotify-btn" href="%s">%s<span>%s</span></a></div><p class="spotinder-staff-note">%s</p>',
-			esc_html__( 'Faz parte da comunidade? Sua conta é o seu Spotify.', 'spotinder' ),
+			'<div class="spotinder-member-login"><p>%s</p><a class="spotinder-google-btn" href="%s">%s<span>%s</span></a></div><p class="spotinder-staff-note">%s</p>',
+			esc_html__( 'Faz parte da comunidade? Entre com sua conta Google.', 'spotinder' ),
 			esc_url( spotinder_login_url() ),
-			spotinder_icon( 'spotify' ),
+			spotinder_icon( 'google' ),
 			esc_html( spotinder_opt( 'login_label' ) ),
 			esc_html__( 'Acesso da equipe', 'spotinder' )
 		);

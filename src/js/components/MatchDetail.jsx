@@ -134,22 +134,25 @@ export default function MatchDetail({ id, events, onBack, onRemoved }) {
 
 			{/* Trilha sonora + playlist */}
 			<section className="card space-y-5 p-6" aria-labelledby="playlist">
-				<div className="flex flex-wrap items-center justify-between gap-3">
-					<div>
-						<p className="text-xs uppercase tracking-widest text-accent">{t('soundtrack_label')}</p>
-						<h2 id="playlist" className="text-lg font-semibold text-white">
-							{t('playlist_label')}
-						</h2>
-					</div>
-					{data.playlist.some((tr) => tr.id) && (
-						<a href={data.playlistSave} className="btn-ghost" data-no-swup title="Pede ao Spotify permissão para criar uma playlist privada na sua conta">
-							Salvar no meu Spotify
-						</a>
-					)}
+				<div>
+					<p className="text-xs uppercase tracking-widest text-accent">{t('soundtrack_label')}</p>
+					<h2 id="playlist" className="text-lg font-semibold text-white">
+						{t('playlist_label')}
+					</h2>
 				</div>
 
 				{playing && <SpotifyEmbed track={playing} height={152} />}
 				{data.soundtrack && playing === data.soundtrack && <p className="text-xs text-white/50">{data.soundtrack.reason}</p>}
+
+				{data.playlist.length === 0 && (
+					<p className="text-sm text-white/50">
+						Vocês ainda não escolheram músicas favoritas. Adicione as suas em{' '}
+						<a className="underline" href={config.urls.profile}>
+							Perfil
+						</a>{' '}
+						e a playlist aparece aqui.
+					</p>
+				)}
 
 				<ol className="divide-y divide-white/5">
 					{data.playlist.map((track, i) => (

@@ -66,7 +66,7 @@ const MAX_BYTES = 5 * 1024 * 1024;
 const TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 /**
- * Foto de perfil: nenhuma (iniciais), foto do Spotify ou foto enviada.
+ * Foto de perfil: nenhuma (iniciais), foto da conta Google ou foto enviada.
  * Salva direto na API (upload não cabe no formulário JSON do perfil).
  */
 export function PhotoField({ me, onSaved }) {
@@ -83,7 +83,7 @@ export function PhotoField({ me, onSaved }) {
 	useEffect(() => () => preview && URL.revokeObjectURL(preview), [preview]);
 
 	const uploadPreview = preview || me.photoChoice?.upload || '';
-	const spotifyPhoto = me.photoChoice?.spotify || '';
+	const googlePhoto = me.photoChoice?.google || '';
 	const dirty = choice !== saved || Boolean(file);
 	const needsConsent = choice !== 'none';
 
@@ -147,7 +147,7 @@ export function PhotoField({ me, onSaved }) {
 
 			<div className="grid grid-cols-3 gap-2">
 				<Option value="none" label="Sem foto" hint="só iniciais" />
-				<Option value="spotify" label="Do Spotify" img={spotifyPhoto} disabled={!spotifyPhoto} hint={spotifyPhoto ? 'foto do seu perfil' : 'seu perfil não tem foto'} />
+				<Option value="google" label="Do Google" img={googlePhoto} disabled={!googlePhoto} hint={googlePhoto ? 'foto da sua conta' : 'sua conta não tem foto'} />
 				<Option value="upload" label={uploadPreview ? 'Minha foto' : 'Enviar foto'} img={uploadPreview} hint={uploadPreview ? 'toque para trocar' : 'JPG, PNG ou WebP'} onClick={() => (uploadPreview && choice !== 'upload' ? setChoice('upload') : input.current?.click())} />
 			</div>
 			<input ref={input} type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={pick} tabIndex={-1} />

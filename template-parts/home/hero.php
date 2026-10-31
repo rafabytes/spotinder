@@ -59,7 +59,7 @@ $spotinder_stats = (array) spotinder_opt( 'hero_stats' );
 										<span class="absolute inset-0 grid place-items-center text-2xl font-bold text-white/30"><?php echo esc_html( spotinder_initials( $spotinder_artist['name'] ) ); ?></span>
 									<?php endif; ?>
 									<span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent leading-tight text-white <?php echo 0 === $spotinder_j ? 'p-3 pb-11 pt-10' : 'p-2 pt-6'; ?>">
-										<span class="block text-[9px] font-semibold uppercase tracking-widest text-white/60">#<?php echo (int) $spotinder_j + 1; ?> mais ouvido</span>
+										<span class="block text-[9px] font-semibold uppercase tracking-widest text-white/60">#<?php echo (int) $spotinder_j + 1; ?> favorito</span>
 										<span class="block font-semibold <?php echo 0 === $spotinder_j ? 'text-base' : 'text-xs'; ?>"><?php echo esc_html( $spotinder_artist['name'] ); ?></span>
 									</span>
 								</div>

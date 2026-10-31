@@ -21,6 +21,7 @@ $spotinder_includes = array(
 	'inc/post-types.php',
 	'inc/acf-fields.php',
 	'inc/db.php',
+	'inc/google-client.php',
 	'inc/spotify-client.php',
 	'inc/members.php',
 	'inc/photos.php',
