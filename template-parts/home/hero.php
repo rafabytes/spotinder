@@ -39,7 +39,7 @@ $spotinder_stats = (array) spotinder_opt( 'hero_stats' );
 
 		<?php if ( $spotinder_cards ) : ?>
 			<div class="hero-deck relative mx-auto h-[470px] w-full max-w-[21rem]" data-hero-deck aria-hidden="true">
-				<span class="hero-match" data-hero-match>Deu som! ♪</span>
+				<span class="hero-match" data-hero-match>Fez barulho! ♪</span>
 
 				<?php foreach ( $spotinder_cards as $spotinder_i => $spotinder_card ) : ?>
 					<?php
@@ -84,7 +84,7 @@ $spotinder_stats = (array) spotinder_opt( 'hero_stats' );
 
 						<div class="flex flex-1 flex-col gap-3 px-5 pb-5">
 							<?php if ( $spotinder_rest ) : ?>
-								<p class="text-[10px] font-semibold uppercase tracking-widest text-white/40"><?php esc_html_e( 'Também ouve', 'spotinder' ); ?></p>
+								<p class="text-[10px] font-semibold uppercase tracking-widest text-white/40"><?php esc_html_e( 'Também curte', 'spotinder' ); ?></p>
 								<div class="flex flex-wrap gap-1.5">
 									<?php foreach ( $spotinder_rest as $spotinder_artist ) : ?>
 										<span class="inline-flex items-center gap-2 rounded-full bg-white/5 py-1 pl-1 pr-3 text-xs text-white/75">

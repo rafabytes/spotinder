@@ -203,3 +203,40 @@ add_filter(
 		return $robots;
 	}
 );
+
+/**
+ * Apaga as contas antigas, criadas pelo login do Spotify (exceto perfis de teste).
+ *
+ * @return int Quantidade apagada.
+ */
+function spotinder_remove_legacy_members() {
+	$ids = get_users(
+		array(
+			'fields'     => 'ID',
+			'number'     => -1,
+			'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+				'relation' => 'AND',
+				array(
+					'key'     => 'spotinder_spotify_id',
+					'compare' => 'EXISTS',
+				),
+				array(
+					'key'     => 'spotinder_google_id',
+					'compare' => 'NOT EXISTS',
+				),
+				array(
+					'key'     => 'spotinder_is_demo',
+					'compare' => 'NOT EXISTS',
+				),
+			),
+		)
+	);
+
+	$count = 0;
+	foreach ( $ids as $id ) {
+		if ( spotinder_delete_member( (int) $id ) ) {
+			++$count;
+		}
+	}
+	return $count;
+}

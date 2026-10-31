@@ -12,13 +12,14 @@
  *  3 — localização aproximada opcional
  *  4 — cartões animados por gênero no destaque da home
  *  5 — login com Google e artistas/músicas escolhidos pela pessoa (sem conectar o Spotify)
+ *  6 — textos e histórias sem "mais ouvidos"/"top do Spotify" (os artistas são escolhidos); "Fez barulho!" no match
  *
  * @package Spotinder
  */
 
 defined( 'ABSPATH' ) || exit;
 
-const SPOTINDER_CONTENT_VERSION = 5;
+const SPOTINDER_CONTENT_VERSION = 6;
 
 add_action( 'admin_init', 'spotinder_run_migrations' );
 
@@ -64,6 +65,20 @@ function spotinder_run_migrations() {
 	// v5: textos do login com Google e da seleção manual de artistas.
 	if ( $version < 5 ) {
 		spotinder_migrate_option_texts( spotinder_migration_5_texts() );
+	}
+
+	// v6: nada de "mais ouvidos" — os artistas são escolhidos pela pessoa.
+	if ( $version < 6 ) {
+		spotinder_migrate_option_texts(
+			array(
+				'options' => array(
+					'share_description' => array( 'Escolha seus artistas favoritos e conheça pessoas pelo que elas realmente escutam. Artistas em primeiro lugar, sem chat: amizades, bandas e companhia para shows.', spotinder_defaults()['share_description'] ),
+					'match_title'       => array( 'Deu som!', spotinder_defaults()['match_title'] ),
+				),
+				'rows'    => array(),
+			)
+		);
+		spotinder_migrate_story_texts();
 	}
 
 	// Páginas legais e resumos: qualquer versão anterior conhecida vai para a atual.
@@ -199,7 +214,8 @@ function spotinder_migrate_legal_pages( &$review ) {
 		}
 
 		// Conteúdo.
-		$file    = (string) file_get_contents( SPOTINDER_DIR . "/content/{$info['file']}.html" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+		// Sem \r: o checkout no Windows (core.autocrlf) não pode mudar o hash.
+		$file    = str_replace( "\r\n", "\n", (string) file_get_contents( SPOTINDER_DIR . "/content/{$info['file']}.html" ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 		$content = md5( trim( $page->post_content ) );
 		if ( md5( trim( $file ) ) === $content ) {
 			continue;
@@ -325,6 +341,52 @@ function spotinder_migration_5_texts() {
 			array( 'faq', null, 'answer', 'Não. A foto é opcional: sem ela, seu cartão mostra suas iniciais e os artistas continuam em destaque. Se quiser, use a foto do seu perfil do Spotify ou envie uma — removemos a localização e outros metadados da imagem, e você pode trocar ou apagar quando quiser.', $q( 'Preciso colocar foto?' )['answer'] ),
 		),
 	);
+}
+
+/**
+ * v6: resumos e capítulos das histórias da campanha que ainda falam em "top do Spotify".
+ * Só troca o trecho se ele ainda estiver lá (texto editado à mão fica como está).
+ */
+function spotinder_migrate_story_texts() {
+	$changes = array(
+		'quatro-desconhecidos-um-refrao' => array(
+			'excerpt'  => array( 'Milton Nascimento no topo do Spotify.', 'Milton Nascimento no topo da lista de favoritos.' ),
+			'chapters' => array( 'a música que estava no top dos dois.', 'a música favorita dos dois.' ),
+		),
+		'companhia-para-o-festival'      => array(
+			'excerpt' => array( 'duas pessoas que ouviam Chico Science', 'duas pessoas que amavam Chico Science' ),
+		),
+	);
+
+	foreach ( $changes as $slug => $change ) {
+		$post = get_page_by_path( $slug, OBJECT, 'spot_story' );
+		if ( ! $post ) {
+			continue;
+		}
+
+		if ( isset( $change['excerpt'] ) && false !== strpos( $post->post_excerpt, $change['excerpt'][0] ) ) {
+			wp_update_post(
+				array(
+					'ID'           => $post->ID,
+					'post_excerpt' => str_replace( $change['excerpt'][0], $change['excerpt'][1], $post->post_excerpt ),
+				)
+			);
+		}
+
+		$chapters = isset( $change['chapters'] ) ? get_field( 'story_chapters', $post->ID ) : null;
+		if ( is_array( $chapters ) ) {
+			$dirty = false;
+			foreach ( $chapters as $i => $chapter ) {
+				if ( false !== strpos( (string) $chapter['text'], $change['chapters'][0] ) ) {
+					$chapters[ $i ]['text'] = str_replace( $change['chapters'][0], $change['chapters'][1], $chapter['text'] );
+					$dirty                  = true;
+				}
+			}
+			if ( $dirty ) {
+				update_field( 'field_sp_story_story_chapters', $chapters, $post->ID );
+			}
+		}
+	}
 }
 
 /**

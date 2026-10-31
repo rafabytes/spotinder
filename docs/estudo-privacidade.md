@@ -3,6 +3,8 @@
 Base para a Política de Privacidade, os Termos de Uso e as decisões técnicas do tema.
 Data: 30/10/2026. **Não é parecer jurídico.** Antes de lançar, valide com um advogado e com o próprio Spotify.
 
+> **Atualização (31/10/2026):** o Spotify não liberou o login de usuários para o propósito do site. As contas passaram a ser criadas pelo Google (`openid profile`, sem e-mail) e cada pessoa escolhe os próprios artistas e músicas numa busca no catálogo do Spotify, feita com o token do app. As partes deste estudo sobre `user-top-read`, artistas "mais ouvidos", sincronização, salvar playlist e foto do perfil do Spotify descrevem o desenho anterior. O texto vigente está em `content/privacidade.html` e `content/termos.html`.
+
 Fontes consultadas:
 - [Spotify Developer Policy](https://developer.spotify.com/policy) (vigente desde 15/05/2025)
 - [Spotify — Update on Developer Access and Platform Security (06/02/2026)](https://developer.spotify.com/blog/2026-02-06-update-on-developer-access-and-platform-security)

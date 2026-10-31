@@ -38,7 +38,7 @@ $spotinder_counts  = spotinder_event_rsvp_counts( $spotinder_e['id'] );
 		<p class="flex items-center gap-2 text-sm text-white/60"><?php echo spotinder_icon( 'pin', 'size-4 shrink-0' ); // phpcs:ignore ?> <?php echo esc_html( trim( $spotinder_e['venue'] . ' · ' . $spotinder_e['city'], ' ·' ) ); ?></p>
 		<p class="flex items-center gap-2 text-sm text-white/60"><?php echo spotinder_icon( 'calendar', 'size-4 shrink-0' ); // phpcs:ignore ?> <?php echo esc_html( $spotinder_e['dateLabel'] ); ?></p>
 		<?php if ( $spotinder_because ) : ?>
-			<p class="rounded-xl bg-brand/15 px-3 py-2 text-xs text-white/80">🎧 <?php echo esc_html( sprintf( __( 'Porque você ouve %s', 'spotinder' ), implode( ', ', array_slice( $spotinder_because, 0, 2 ) ) ) ); ?></p>
+			<p class="rounded-xl bg-brand/15 px-3 py-2 text-xs text-white/80">🎧 <?php echo esc_html( sprintf( __( 'Porque você curte %s', 'spotinder' ), implode( ', ', array_slice( $spotinder_because, 0, 2 ) ) ) ); ?></p>
 		<?php endif; ?>
 		<div class="mt-auto flex items-center justify-between pt-2 text-xs text-white/50">
 			<span><?php echo esc_html( $spotinder_e['price'] ); ?></span>

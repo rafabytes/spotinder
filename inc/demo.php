@@ -64,7 +64,7 @@ function spotinder_seed_pages() {
 
 		$content = '';
 		if ( $content_file && file_exists( SPOTINDER_DIR . "/content/{$content_file}.html" ) ) {
-			$content = str_replace( '{{brand}}', spotinder_brand(), (string) file_get_contents( SPOTINDER_DIR . "/content/{$content_file}.html" ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+			$content = str_replace( array( '{{brand}}', "\r\n" ), array( spotinder_brand(), "\n" ), (string) file_get_contents( SPOTINDER_DIR . "/content/{$content_file}.html" ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 		}
 
 		$existing = get_page_by_path( $slug );
@@ -182,7 +182,7 @@ function spotinder_seed_stories() {
 		array(
 			'slug'     => 'quatro-desconhecidos-um-refrao',
 			'title'    => 'Quatro desconhecidos, um refrão',
-			'excerpt'  => 'Uma professora aposentada, um estudante de 19 anos, uma enfermeira do plantão noturno e um DJ skatista. O que eles tinham em comum? Milton Nascimento no topo do Spotify.',
+			'excerpt'  => 'Uma professora aposentada, um estudante de 19 anos, uma enfermeira do plantão noturno e um DJ skatista. O que eles tinham em comum? Milton Nascimento no topo da lista de favoritos.',
 			'subtitle' => 'Como o Clube da Esquina juntou de novo gente de Belo Horizonte — 50 anos depois.',
 			'city'     => 'Belo Horizonte, MG',
 			'hashtag'  => '#NinguémOuveSozinho',
@@ -198,7 +198,7 @@ function spotinder_seed_stories() {
 			),
 			'chapters' => array(
 				array( 'Faixa 1', 'O cartão sem foto', 'Theo abriu o app esperando ver gente da faculdade. O primeiro cartão tinha Milton Nascimento, Lô Borges e Beto Guedes no topo, 91% de compatibilidade e uma cidade: Belo Horizonte. Deslizou para a direita sem pensar. Do outro lado, Dona Cida tinha entrado no app porque a neta insistiu. "Achei que ia ser coisa de namoro. Quando vi que era um menino de 19 anos que ouvia o mesmo disco que eu, ri sozinha."' ),
-				array( 'Faixa 2', 'A trilha sonora', 'O match tocou "Clube da Esquina Nº 2" — a música que estava no top dos dois. Sem chat, o app mostrou o Instagram de cada um e uma playlist em comum. Theo mandou um direct com uma pergunta só: "a senhora já foi na esquina da Divinópolis com a Paraisópolis?". Ela tinha ido. Em 1972.' ),
+				array( 'Faixa 2', 'A trilha sonora', 'O match tocou "Clube da Esquina Nº 2" — a música favorita dos dois. Sem chat, o app mostrou o Instagram de cada um e uma playlist em comum. Theo mandou um direct com uma pergunta só: "a senhora já foi na esquina da Divinópolis com a Paraisópolis?". Ela tinha ido. Em 1972.' ),
 				array( 'Faixa 3', 'A audição coletiva', 'Na agenda do app tinha uma audição coletiva do disco inteiro num bar de Santa Tereza. Theo convidou Dona Cida pelo próprio app. Joana marcou presença porque o evento apareceu como "recomendado para você". Rafa foi porque viu que dois matches dele também iam.' ),
 				array( 'Faixa 4', 'O lado B', 'Quatro pessoas que nunca teriam se cruzado sentaram na mesma mesa. Dona Cida contou como era a cidade nos anos 70; Rafa mostrou os samples que fez com o disco; Joana chorou em "Cais". Hoje eles organizam o Clube do Lado B: uma audição de disco inteiro por mês, com mais de 40 pessoas. Nenhum casal. Muitos amigos.' ),
 			),
@@ -230,7 +230,7 @@ function spotinder_seed_stories() {
 		array(
 			'slug'     => 'companhia-para-o-festival',
 			'title'    => 'Companhia para o festival',
-			'excerpt'  => 'Aos 45, Luísa tinha o ingresso e ninguém para ir junto. O app achou duas pessoas que ouviam Chico Science tanto quanto ela.',
+			'excerpt'  => 'Aos 45, Luísa tinha o ingresso e ninguém para ir junto. O app achou duas pessoas que amavam Chico Science tanto quanto ela.',
 			'subtitle' => 'Nenhum amigo topou. Três desconhecidos toparam.',
 			'city'     => 'Recife, PE',
 			'hashtag'  => '#NinguémOuveSozinho',

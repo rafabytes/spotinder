@@ -57,6 +57,9 @@ add_action(
 				$result = spotinder_enrich_demo_catalog();
 				$msg    = is_wp_error( $result ) ? 'Erro: ' . $result->get_error_message() : sprintf( 'Catálogo atualizado: %d itens encontrados no Spotify, %d não encontrados.', $result['ok'], $result['fail'] );
 				break;
+			case 'remove_legacy':
+				$msg = sprintf( '%d contas antigas (login pelo Spotify) apagadas.', spotinder_remove_legacy_members() );
+				break;
 			case 'retention':
 				$msg = sprintf( '%d contas inativas apagadas.', spotinder_run_retention() );
 				break;
@@ -176,6 +179,10 @@ function spotinder_render_tools_page() {
 		$button( 'enrich_demo', 'Completar com dados do Spotify' );
 		$button( 'remove_demo', 'Remover usuários de teste', 'button button-link-delete', 'Remover todos os usuários de teste e seus matches?' );
 		?>
+
+		<h2>Contas antigas (login pelo Spotify)</h2>
+		<p>Contas criadas antes do login com Google. Ninguém consegue mais entrar nelas e elas não aparecem no deck; os matches com elas continuam até serem apagadas.</p>
+		<?php $button( 'remove_legacy', 'Apagar contas antigas', 'button button-link-delete', 'Apagar todas as contas antigas do Spotify, com perfis, matches e convites? Não dá para desfazer.' ); ?>
 
 		<h2>Retenção</h2>
 		<p>Contas sem acesso há mais de <?php echo (int) spotinder_opt( 'inactive_delete_days' ); ?> dias são apagadas diariamente (exceto usuários de teste).</p>

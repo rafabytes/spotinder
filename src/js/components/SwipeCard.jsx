@@ -157,7 +157,7 @@ export default function SwipeCard({ profile, active, depth, fling, onDone }) {
 
 				{rest.length > 0 && (
 					<div>
-						<p className="mb-2 text-xs uppercase tracking-widest text-white/40">Também ouve</p>
+						<p className="mb-2 text-xs uppercase tracking-widest text-white/40">Também curte</p>
 						<ul className="flex flex-wrap gap-1.5">
 							{rest.map((a) => (
 								<li key={a.id || a.name}>

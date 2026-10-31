@@ -3,7 +3,7 @@ import SpotifyEmbed from './SpotifyEmbed';
 import { Avatar, Modal } from './ui';
 
 /**
- * "Deu som!" — aparece quando a curtida é recíproca e toca a trilha sonora do match.
+ * "Fez barulho!" — aparece quando a curtida é recíproca e toca a trilha sonora do match.
  */
 export default function MatchModal({ match, onClose }) {
 	if (!match) return null;

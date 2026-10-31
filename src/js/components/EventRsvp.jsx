@@ -37,7 +37,7 @@ export default function EventRsvp({ eventId }) {
 				<strong className="text-white">{data.counts.going}</strong> vão · <strong className="text-white">{data.counts.interested}</strong> com interesse
 			</p>
 
-			{data.because?.length > 0 && <p className="rounded-xl bg-brand/15 px-3 py-2 text-xs text-white/80">🎧 Porque você ouve {data.because.slice(0, 3).join(', ')}</p>}
+			{data.because?.length > 0 && <p className="rounded-xl bg-brand/15 px-3 py-2 text-xs text-white/80">🎧 Porque você curte {data.because.slice(0, 3).join(', ')}</p>}
 
 			{config.isMember && config.onboarded ? (
 				<div className="grid grid-cols-2 gap-2">

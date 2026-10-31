@@ -12,6 +12,10 @@ get_header();
 
 $spotinder_sections = array( 'hero', 'how', 'campaign', 'intentions', 'features', 'events', 'faq', 'cta' );
 
+if ( ! spotinder_stories_enabled() ) {
+	$spotinder_sections = array_diff( $spotinder_sections, array( 'campaign' ) );
+}
+
 foreach ( $spotinder_sections as $spotinder_section ) {
 	get_template_part( 'template-parts/home/' . $spotinder_section );
 }

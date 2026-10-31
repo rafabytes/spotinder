@@ -30,7 +30,7 @@ function spotinder_defaults() {
 
 		// Ícones e compartilhamento.
 		'share_image'           => '',
-		'share_description'     => 'Escolha seus artistas favoritos e conheça pessoas pelo que elas realmente escutam. Artistas em primeiro lugar, sem chat: amizades, bandas e companhia para shows.',
+		'share_description'     => 'Escolha seus artistas favoritos e conheça pessoas que curtem o mesmo som. Artistas em primeiro lugar, sem chat: amizades, bandas e companhia para shows.',
 		'share_twitter'         => '',
 
 		// Login com Google.
@@ -141,7 +141,8 @@ function spotinder_defaults() {
 			),
 		),
 
-		// Home — campanha.
+		// Home — campanha (histórias). Desligada até haver histórias reais.
+		'campaign_enabled'      => false,
 		'campaign_eyebrow'      => 'Campanha #NinguémOuveSozinho',
 		'campaign_title'        => 'Não era sobre amor. Era sobre não ouvir sozinho.',
 		'campaign_text'         => 'Histórias reais de gente que se encontrou pelo fone de ouvido — e descobriu que o melhor do som é dividir.',
@@ -325,7 +326,7 @@ function spotinder_defaults() {
 		'deck_title'            => 'Descobrir',
 		'deck_empty_title'      => 'Você ouviu todo mundo por aqui.',
 		'deck_empty_text'       => 'Volte mais tarde — gente nova entra todo dia. Enquanto isso, que tal dar uma olhada na agenda?',
-		'match_title'           => 'Deu som!',
+		'match_title'           => 'Fez barulho!',
 		'match_text'            => 'Vocês dois curtiram o gosto um do outro. Esta é a trilha sonora de vocês:',
 		'soundtrack_label'      => 'A trilha sonora de vocês',
 		'playlist_label'        => 'Playlist em comum',

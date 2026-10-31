@@ -186,7 +186,7 @@ export function ArtistPicker({ value, onChange }) {
 			)}
 			<ErrorBox error={search.error} />
 
-			<Selected items={value} itemKey={artistKey} onChange={onChange} empty="Nenhum artista ainda. Comece pelo que você mais ouve." render={(a) => <Row image={a.image} name={a.name} round />} />
+			<Selected items={value} itemKey={artistKey} onChange={onChange} empty="Nenhum artista ainda. Comece pelos que você mais curte." render={(a) => <Row image={a.image} name={a.name} round />} />
 			<p className="text-xs text-white/40">Os primeiros da lista aparecem em destaque no seu cartão e pesam mais na compatibilidade.</p>
 		</div>
 	);

@@ -242,7 +242,7 @@ add_action(
 function spotinder_fallback_menu() {
 	$items = array(
 		array( get_post_type_archive_link( 'spot_event' ), __( 'Eventos', 'spotinder' ) ),
-		array( get_post_type_archive_link( 'spot_story' ), __( 'Histórias', 'spotinder' ) ),
+		spotinder_stories_enabled() ? array( get_post_type_archive_link( 'spot_story' ), __( 'Histórias', 'spotinder' ) ) : array( '', '' ),
 		array( spotinder_page_url( 'safety' ), __( 'Segurança', 'spotinder' ) ),
 	);
 	echo '<ul class="menu">';

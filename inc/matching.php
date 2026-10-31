@@ -121,6 +121,18 @@ function spotinder_get_deck( $user_id, $intention = '' ) {
 			'key'     => 'spotinder_banned',
 			'compare' => 'NOT EXISTS',
 		),
+		// Contas antigas do login pelo Spotify não entram mais: ficariam no deck sem ninguém para responder.
+		array(
+			'relation' => 'OR',
+			array(
+				'key'     => 'spotinder_google_id',
+				'compare' => 'EXISTS',
+			),
+			array(
+				'key'     => 'spotinder_is_demo',
+				'compare' => 'EXISTS',
+			),
+		),
 	);
 
 	$active_since = time() - DAY_IN_SECONDS * (int) spotinder_opt( 'inactive_hide_days' );
@@ -378,7 +390,7 @@ function spotinder_common_playlist( $a, $b, $limit = 30 ) {
 		foreach ( $tracks as $t ) {
 			foreach ( $t['artists'] as $artist ) {
 				if ( isset( $other_artists[ spotinder_akey( $artist['name'] ) ] ) ) {
-					$add( $t, sprintf( 'De %s, que vocês dois ouvem', $artist['name'] ), 'artist' );
+					$add( $t, sprintf( 'De %s, que vocês dois curtem', $artist['name'] ), 'artist' );
 					break;
 				}
 			}

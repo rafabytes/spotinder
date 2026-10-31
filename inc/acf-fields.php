@@ -288,6 +288,7 @@ function spotinder_register_acf() {
 				spotinder_acf_repeater( 'how_steps', 'Passos', $emoji_title_text, 'Adicionar passo' ),
 
 				spotinder_acf_tab( 'campaign', 'Campanha' ),
+				spotinder_acf_field( 'campaign_enabled', 'Mostrar as histórias da campanha no site', 'true_false', array( 'ui' => 1, 'instructions' => 'Desligado: some a seção da página inicial, o item "Histórias" dos menus e os sitemaps, e /historias/ volta para a página inicial. As histórias continuam salvas aqui no painel.' ) ),
 				spotinder_acf_field( 'campaign_eyebrow', 'Chamada / hashtag' ),
 				spotinder_acf_field( 'campaign_title', 'Título da campanha' ),
 				spotinder_acf_field( 'campaign_text', 'Texto', 'textarea' ),
@@ -455,7 +456,7 @@ function spotinder_register_acf() {
 				spotinder_acf_field( 'event_price', 'Preço', 'text', array( 'placeholder' => 'Gratuito / R$ 30', 'wrapper' => array( 'width' => 50 ) ) ),
 				spotinder_acf_field( 'event_ticket_url', 'Link de ingresso/inscrição', 'url', array( 'wrapper' => array( 'width' => 50 ) ) ),
 				spotinder_acf_field( 'event_official', 'Encontro oficial da comunidade', 'true_false', array( 'ui' => 1, 'instructions' => 'Destaca o evento como organizado pela equipe.' ) ),
-				spotinder_acf_field( 'event_artists', 'Artistas relacionados (um por linha)', 'textarea', array( 'rows' => 4, 'instructions' => 'Usado para recomendar o evento a quem ouve esses artistas.' ) ),
+				spotinder_acf_field( 'event_artists', 'Artistas relacionados (um por linha)', 'textarea', array( 'rows' => 4, 'instructions' => 'Usado para recomendar o evento a quem tem esses artistas entre os favoritos.' ) ),
 				spotinder_acf_field( 'event_spotify_url', 'Link do Spotify (playlist/álbum/artista)', 'url', array( 'instructions' => 'Exibido com o player oficial do Spotify na página do evento.' ) ),
 			),
 		)
@@ -492,7 +493,7 @@ function spotinder_register_acf() {
 						'name'   => array( 'Nome' ),
 						'age'    => array( 'Idade', 'number' ),
 						'role'   => array( 'Quem é' ),
-						'artist' => array( 'Artista mais ouvido' ),
+						'artist' => array( 'Artista favorito' ),
 					),
 					'Adicionar pessoa',
 					'story'

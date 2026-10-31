@@ -225,7 +225,9 @@ function spotinder_has_consents( $user_id ) {
 function spotinder_is_discoverable( $user_id ) {
 	return get_user_meta( $user_id, 'spotinder_onboarded', true )
 		&& get_user_meta( $user_id, 'spotinder_visible', true )
-		&& ! get_user_meta( $user_id, 'spotinder_banned', true );
+		&& ! get_user_meta( $user_id, 'spotinder_banned', true )
+		// Contas antigas (login pelo Spotify) não aparecem: ninguém consegue mais entrar nelas.
+		&& ( get_user_meta( $user_id, 'spotinder_google_id', true ) || get_user_meta( $user_id, 'spotinder_is_demo', true ) );
 }
 
 /**

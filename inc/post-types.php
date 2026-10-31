@@ -132,3 +132,54 @@ add_action(
 	10,
 	2
 );
+
+/**
+ * As histórias da campanha estão no ar? (Spotinder > Página inicial > Campanha.)
+ */
+function spotinder_stories_enabled() {
+	return (bool) spotinder_opt( 'campaign_enabled' );
+}
+
+/**
+ * Histórias desligadas: arquivo e páginas voltam para a home (a equipe ainda pode
+ * pré-visualizar), saem dos menus e dos sitemaps (WordPress e Rank Math).
+ */
+add_action(
+	'template_redirect',
+	function () {
+		if ( spotinder_stories_enabled() || current_user_can( 'edit_posts' ) ) {
+			return;
+		}
+		if ( is_post_type_archive( 'spot_story' ) || is_singular( 'spot_story' ) ) {
+			wp_safe_redirect( home_url( '/' ), 302 );
+			exit;
+		}
+	}
+);
+
+add_filter(
+	'wp_nav_menu_objects',
+	function ( $items ) {
+		if ( spotinder_stories_enabled() ) {
+			return $items;
+		}
+		return array_filter( $items, fn( $item ) => 'spot_story' !== $item->object );
+	}
+);
+
+add_filter(
+	'wp_sitemaps_post_types',
+	function ( $types ) {
+		if ( ! spotinder_stories_enabled() ) {
+			unset( $types['spot_story'] );
+		}
+		return $types;
+	}
+);
+
+add_filter(
+	'rank_math/sitemap/exclude_post_type',
+	fn( $exclude, $type ) => 'spot_story' === $type && ! spotinder_stories_enabled() ? true : $exclude,
+	10,
+	2
+);

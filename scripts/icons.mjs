@@ -30,7 +30,7 @@ const opt = {
 	accent: args.accent || '#FF4D6D',
 	highlight: args.highlight || '#C6FF3D',
 	title: args.title || 'Ninguém deveria ouvir sozinho.',
-	subtitle: args.subtitle || 'Conheça pessoas pelo que elas realmente escutam. Artistas em primeiro lugar. Sem chat.',
+	subtitle: args.subtitle || 'Conheça pessoas que curtem o mesmo som. Artistas em primeiro lugar. Sem chat.',
 	tag: args.tag || '#NinguémOuveSozinho',
 };
 
@@ -122,7 +122,7 @@ function ogHtml() {
 			<div class="btns"><div class="btn">✕</div><div class="btn like">♥</div></div>
 		</div>
 	</div>
-	<div class="sticker">Deu som! ♪</div>
+	<div class="sticker">Fez barulho! ♪</div>
 	</body></html>`;
 }
 
