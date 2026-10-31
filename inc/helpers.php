@@ -204,6 +204,39 @@ function spotinder_is_member( $user_id = 0 ) {
 }
 
 /**
+ * Texto curto do painel com HTML básico (links, negrito, itálico, quebra de linha).
+ * Links para fora do site abrem em nova guia.
+ *
+ * @param string $text Texto do painel.
+ */
+function spotinder_inline_html( $text ) {
+	$html = wp_kses(
+		(string) $text,
+		array(
+			'a'      => array(
+				'href'  => true,
+				'title' => true,
+			),
+			'strong' => array(),
+			'em'     => array(),
+			'br'     => array(),
+		)
+	);
+
+	$home = trailingslashit( home_url() );
+	return preg_replace_callback(
+		'#<a\s([^>]*)>#i',
+		function ( $m ) use ( $home ) {
+			if ( ! preg_match( '#href="([^"]*)"#i', $m[1], $href ) || ! preg_match( '#^https?://#i', $href[1] ) || 0 === strpos( trailingslashit( $href[1] ), $home ) ) {
+				return $m[0];
+			}
+			return '<a ' . $m[1] . ' target="_blank" rel="noopener">';
+		},
+		$html
+	);
+}
+
+/**
  * Codifica dados para atributo HTML data-props.
  *
  * @param mixed $data Dados.

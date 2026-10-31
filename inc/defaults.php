@@ -145,13 +145,13 @@ function spotinder_defaults() {
 		'campaign_cta_label'    => 'Ler a história completa',
 
 		// Home — intenções.
-		'intentions_eyebrow'    => 'Não é (só) sobre namoro',
+		'intentions_eyebrow'    => 'Não é (só) sobre música',
 		'intentions_title'      => 'Você escolhe o que procura.',
-		'intentions_text'       => 'Marque uma ou várias intenções no seu perfil. O deck prioriza quem procura o mesmo que você.',
+		'intentions_text'       => 'A prioridade é de quem procura o mesmo que você.',
 
 		// Home — recursos.
-		'features_eyebrow'      => 'O que tem aqui',
-		'features_title'        => 'Feito para transformar gosto em encontro.',
+		'features_eyebrow'      => 'Comunidade',
+		'features_title'        => 'Feito para unir tribos.',
 		'features'              => array(
 			array(
 				'emoji' => '🎵',
@@ -182,16 +182,12 @@ function spotinder_defaults() {
 		'faq_title'             => 'Antes de dar play.',
 		'faq'                   => array(
 			array(
-				'question' => 'Preciso ter conta no Spotify?',
-				'answer'   => 'Não. Você entra com sua conta Google e escolhe seus artistas e músicas favoritos numa busca. O player de trechos funciona para todos; quem tem Premium e está logado no Spotify ouve a faixa completa.',
+				'question' => 'É um app de namoro?',
+				'answer'   => 'Não exclusivamente. A maioria das pessoas procura amizade, companhia para shows ou gente para montar uma banda. Se rolar algo mais, ótimo — mas não é o foco.',
 			),
 			array(
 				'question' => 'Por que não tem chat?',
 				'answer'   => 'Porque a ideia é tirar a conversa do app e levar para a vida: vocês veem as redes que cada um escolheu mostrar, ganham uma playlist em comum e podem se convidar para eventos.',
-			),
-			array(
-				'question' => 'É um app de namoro?',
-				'answer'   => 'Não exclusivamente. A maioria das pessoas procura amizade, companhia para shows ou gente para montar uma banda. Se rolar algo mais, ótimo — mas não é o foco.',
 			),
 			array(
 				'question' => 'O que vocês recebem da minha conta Google?',
@@ -323,7 +319,7 @@ function spotinder_defaults() {
 		// Rodapé.
 		'footer_text'           => 'Uma rede para unir pessoas pelo gosto musical. Amizades, bandas, companhia para shows — e o que mais tocar.',
 		'footer_attribution'    => 'Dados de artistas e músicas fornecidos pelo Spotify. Conteúdo musical © respectivos titulares.',
-		'footer_disclaimer'     => 'Projeto independente, sem afiliação, patrocínio ou endosso do Spotify AB. Spotify é marca registrada da Spotify AB.',
+		'footer_disclaimer'     => 'Feito com WordPress 🩷 por <a href="https://rafabytes.com">@rafabytes</a>',
 		'footer_social'         => array(),
 		'spotify_logo'          => '',
 	);

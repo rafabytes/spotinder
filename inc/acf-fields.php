@@ -415,10 +415,10 @@ function spotinder_register_acf() {
 			'title'    => 'Rodapé',
 			'location' => $options( 'spotinder-footer' ),
 			'fields'   => array(
-				spotinder_acf_field( 'footer_text', 'Texto institucional', 'textarea' ),
-				spotinder_acf_field( 'footer_attribution', 'Atribuição ao Spotify', 'textarea', array( 'instructions' => 'Exigida pela Developer Policy (II.4): todo conteúdo do Spotify precisa ser atribuído.' ) ),
+				spotinder_acf_field( 'footer_text', 'Texto institucional', 'textarea', array( 'instructions' => 'Aceita links: <code>&lt;a href="https://..."&gt;texto&lt;/a&gt;</code>. Links para fora do site abrem em nova guia.' ) ),
+				spotinder_acf_field( 'footer_attribution', 'Atribuição ao Spotify', 'textarea', array( 'instructions' => 'Exigida pela Developer Policy (II.4): todo conteúdo do Spotify precisa ser atribuído. Aceita links: <code>&lt;a href="https://..."&gt;texto&lt;/a&gt;</code>.' ) ),
 				spotinder_acf_field( 'spotify_logo', 'Logo oficial do Spotify (atribuição)', 'image', array( 'return_format' => 'url', 'instructions' => 'Baixe o logo oficial em developer.spotify.com/documentation/design e siga as regras de uso (tamanho mínimo, sem alterar cores).' ) ),
-				spotinder_acf_field( 'footer_disclaimer', 'Aviso de não afiliação', 'textarea' ),
+				spotinder_acf_field( 'footer_disclaimer', 'Aviso de não afiliação / créditos', 'textarea', array( 'instructions' => 'Aceita links: <code>&lt;a href="https://..."&gt;texto&lt;/a&gt;</code>. Links para fora do site abrem em nova guia.' ) ),
 				spotinder_acf_repeater(
 					'footer_social',
 					'Redes da marca',

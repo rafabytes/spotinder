@@ -152,6 +152,11 @@
 		@apply inline-block size-8 animate-spin rounded-full border-2 border-white/15 border-t-brand;
 	}
 
+	/* Links nos textos do rodapé (spotinder_inline_html). */
+	.footer-rich a {
+		@apply text-white/70 underline decoration-white/25 underline-offset-2 transition hover:text-white hover:decoration-white/60;
+	}
+
 	/* Menus do WordPress. */
 	.nav-primary .menu {
 		@apply flex items-center gap-1;

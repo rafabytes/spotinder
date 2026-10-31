@@ -278,7 +278,6 @@ function spotinder_migration_2_texts() {
  */
 function spotinder_migration_5_texts() {
 	$d = spotinder_defaults();
-	$q = fn( $question ) => current( wp_list_filter( $d['faq'], array( 'question' => $question ) ) );
 
 	return array(
 		'options' => array(
@@ -327,7 +326,7 @@ function spotinder_migration_5_texts() {
 				'Sem senha e sem e-mail: da sua conta Google recebemos só nome e foto pública. A foto é opcional e você apaga tudo com um clique.',
 			),
 			array( 'faq', null, 'question', 'Preciso ter Spotify Premium?', 'Preciso ter conta no Spotify?' ),
-			array( 'faq', null, 'answer', 'Não. Qualquer conta Spotify serve para entrar. O player de trechos funciona para todos; quem tem Premium e está logado no Spotify ouve a faixa completa.', $q( 'Preciso ter conta no Spotify?' )['answer'] ),
+			array( 'faq', null, 'answer', 'Não. Qualquer conta Spotify serve para entrar. O player de trechos funciona para todos; quem tem Premium e está logado no Spotify ouve a faixa completa.', 'Não. Você entra com sua conta Google e escolhe seus artistas e músicas favoritos numa busca. O player de trechos funciona para todos; quem tem Premium e está logado no Spotify ouve a faixa completa.' ),
 			array( 'faq', null, 'question', 'O que vocês veem da minha conta Spotify?', 'O que vocês recebem da minha conta Google?' ),
 			array(
 				'faq',
@@ -337,10 +336,10 @@ function spotinder_migration_5_texts() {
 					'Só seus artistas e músicas mais ouvidos dos últimos meses, o nome público do seu perfil e o endereço da sua foto do Spotify (que só aparece se você escolher usá-la). Não acessamos e-mail, playlists privadas nem o que você está ouvindo agora.',
 					'Só seus artistas e músicas mais ouvidos dos últimos meses e o nome público do seu perfil. Não acessamos e-mail, foto, playlists privadas nem o que você está ouvindo agora.',
 				),
-				$q( 'O que vocês recebem da minha conta Google?' )['answer'],
+				'Só o identificador da conta, seu nome e o endereço da sua foto pública (que só aparece se você escolher usá-la). Não pedimos seu e-mail nem acessamos contatos, agenda ou qualquer outro dado da conta. Seus artistas e músicas é você quem escolhe.',
 			),
-			array( 'faq', null, 'answer', 'Em Perfil > Privacidade, clique em "Apagar minha conta". Removemos tudo na hora: perfil, matches, convites e dados vindos do Spotify.', $q( 'Como apago minha conta?' )['answer'] ),
-			array( 'faq', null, 'answer', 'Não. A foto é opcional: sem ela, seu cartão mostra suas iniciais e os artistas continuam em destaque. Se quiser, use a foto do seu perfil do Spotify ou envie uma — removemos a localização e outros metadados da imagem, e você pode trocar ou apagar quando quiser.', $q( 'Preciso colocar foto?' )['answer'] ),
+			array( 'faq', null, 'answer', 'Em Perfil > Privacidade, clique em "Apagar minha conta". Removemos tudo na hora: perfil, matches, convites e dados vindos do Spotify.', 'Em Perfil > Privacidade, clique em "Apagar minha conta". Removemos tudo na hora: perfil, artistas e músicas escolhidos, matches e convites.' ),
+			array( 'faq', null, 'answer', 'Não. A foto é opcional: sem ela, seu cartão mostra suas iniciais e os artistas continuam em destaque. Se quiser, use a foto do seu perfil do Spotify ou envie uma — removemos a localização e outros metadados da imagem, e você pode trocar ou apagar quando quiser.', 'Não. A foto é opcional: sem ela, seu cartão mostra suas iniciais e os artistas continuam em destaque. Se quiser, use a foto da sua conta Google ou envie uma — removemos a localização e outros metadados da imagem, e você pode trocar ou apagar quando quiser.' ),
 		),
 	);
 }

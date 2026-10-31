@@ -19,7 +19,7 @@ $spotinder_slogo  = spotinder_opt( 'spotify_logo' );
 				<?php echo spotinder_logo_mark( 'size-9' ); // phpcs:ignore ?>
 				<?php echo esc_html( spotinder_brand() ); ?>
 			</a>
-			<p class="text-sm leading-relaxed text-white/60"><?php echo esc_html( spotinder_opt( 'footer_text' ) ); ?></p>
+			<p class="footer-rich text-sm leading-relaxed text-white/60"><?php echo spotinder_inline_html( spotinder_opt( 'footer_text' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
 			<?php if ( $spotinder_social ) : ?>
 				<ul class="flex flex-wrap gap-2">
 					<?php foreach ( $spotinder_social as $spotinder_item ) : ?>
@@ -66,9 +66,9 @@ $spotinder_slogo  = spotinder_opt( 'spotify_logo' );
 				<?php if ( $spotinder_slogo ) : ?>
 					<img src="<?php echo esc_url( $spotinder_slogo ); ?>" alt="Spotify" class="h-5 w-auto">
 				<?php endif; ?>
-				<span><?php echo esc_html( spotinder_opt( 'footer_attribution' ) ); ?></span>
+				<span class="footer-rich"><?php echo spotinder_inline_html( spotinder_opt( 'footer_attribution' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
 			</p>
-			<p><?php echo esc_html( spotinder_opt( 'footer_disclaimer' ) ); ?></p>
+			<p class="footer-rich"><?php echo spotinder_inline_html( spotinder_opt( 'footer_disclaimer' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
 		</div>
 		<p class="container-site pb-6 text-xs text-white/30">© <?php echo esc_html( wp_date( 'Y' ) . ' ' . spotinder_brand() ); ?></p>
 	</div>
