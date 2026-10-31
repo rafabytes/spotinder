@@ -80,6 +80,24 @@ add_filter(
 );
 
 /**
+ * O CSS do tema também fica fora do LiteSpeed. Com "Carregar CSS de forma
+ * assíncrona" (predefinição avançada), a página aparecia crua até o CSS chegar —
+ * o logo em SVG ocupava a tela inteira. São ~85 KB já minificados pelo Parcel:
+ * melhor bloquear a renderização do que piscar sem estilo.
+ */
+add_filter(
+	'style_loader_tag',
+	function ( $tag, $handle ) {
+		if ( 'spotinder' === $handle && false === strpos( $tag, 'data-no-optimize' ) ) {
+			$tag = str_replace( '<link ', '<link data-no-optimize="1" ', $tag );
+		}
+		return $tag;
+	},
+	10,
+	2
+);
+
+/**
  * Configuração e textos repassados ao React.
  */
 function spotinder_js_config() {
@@ -166,7 +184,7 @@ add_action(
 	'wp_head',
 	function () {
 		printf(
-			'<style id="spotinder-vars">:root{--sp-primary:%s;--sp-accent:%s;--sp-highlight:%s;--sp-primary-rgb:%s;}</style>' . "\n",
+			'<style id="spotinder-vars" data-no-optimize="1">:root{--sp-primary:%s;--sp-accent:%s;--sp-highlight:%s;--sp-primary-rgb:%s;}</style>' . "\n",
 			esc_html( spotinder_opt( 'color_primary' ) ),
 			esc_html( spotinder_opt( 'color_accent' ) ),
 			esc_html( spotinder_opt( 'color_highlight' ) ),
