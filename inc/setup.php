@@ -55,6 +55,31 @@ add_action(
 );
 
 /**
+ * O bundle já sai minificado pelo Parcel. O minificador de JS do LiteSpeed
+ * Cache corrompe o código do React (apaga um `;` de um `for(;;)`) e o atraso
+ * de JS faria `window.SPOTINDER` chegar fora de ordem: tira o bundle e a
+ * configuração inline de qualquer otimização de JS de plugins.
+ */
+add_filter(
+	'wp_script_attributes',
+	function ( $attributes ) {
+		if ( isset( $attributes['id'] ) && 'spotinder-js' === $attributes['id'] ) {
+			$attributes['data-no-optimize'] = '1';
+		}
+		return $attributes;
+	}
+);
+add_filter(
+	'wp_inline_script_attributes',
+	function ( $attributes ) {
+		if ( isset( $attributes['id'] ) && 'spotinder-js-before' === $attributes['id'] ) {
+			$attributes['data-no-optimize'] = '1';
+		}
+		return $attributes;
+	}
+);
+
+/**
  * Configuração e textos repassados ao React.
  */
 function spotinder_js_config() {
