@@ -1,9 +1,10 @@
 <?php
 /**
- * Cliente mínimo da Web API do Spotify.
+ * Cliente mínimo do catálogo público do Spotify (Web API).
  *
- * Princípio de privacidade: tokens de usuário só vivem durante a requisição
- * do callback OAuth — nunca são gravados no banco.
+ * Usa só o token do próprio app (client credentials): ninguém conecta a conta
+ * do Spotify. Serve para a busca de artistas e músicas que cada membro escolhe,
+ * para as fotos dos cartões do destaque e para os perfis de teste.
  *
  * @package Spotinder
  */
@@ -28,60 +29,7 @@ function spotinder_spotify_basic_auth() {
 }
 
 /**
- * URL de autorização.
- *
- * @param string $scope Escopos separados por espaço.
- * @param string $state Estado anti-CSRF.
- */
-function spotinder_spotify_authorize_url( $scope, $state ) {
-	return SPOTINDER_SPOTIFY_ACCOUNTS . '/authorize?' . http_build_query(
-		array(
-			'response_type' => 'code',
-			'client_id'     => spotinder_opt( 'spotify_client_id' ),
-			'scope'         => $scope,
-			'redirect_uri'  => spotinder_redirect_uri(),
-			'state'         => $state,
-		),
-		'',
-		'&',
-		PHP_QUERY_RFC3986
-	);
-}
-
-/**
- * Troca o code por um access token.
- *
- * @param string $code Código recebido no callback.
- * @return string|WP_Error Access token.
- */
-function spotinder_spotify_exchange_code( $code ) {
-	$response = wp_remote_post(
-		SPOTINDER_SPOTIFY_ACCOUNTS . '/api/token',
-		array(
-			'timeout' => 15,
-			'headers' => array(
-				'Authorization' => spotinder_spotify_basic_auth(),
-				'Content-Type'  => 'application/x-www-form-urlencoded',
-			),
-			'body'    => array(
-				'grant_type'   => 'authorization_code',
-				'code'         => $code,
-				'redirect_uri' => spotinder_redirect_uri(),
-			),
-		)
-	);
-
-	$data = spotinder_spotify_decode( $response );
-	if ( is_wp_error( $data ) ) {
-		return $data;
-	}
-
-	return empty( $data['access_token'] ) ? new WP_Error( 'spotify_token', 'Spotify não retornou token.' ) : $data['access_token'];
-}
-
-/**
- * Token do próprio app (client credentials) — usado só para buscar metadados
- * públicos de artistas/músicas dos usuários de teste.
+ * Token do próprio app (client credentials) — só lê metadados públicos do catálogo.
  *
  * @return string|WP_Error
  */
@@ -117,7 +65,7 @@ function spotinder_spotify_app_token() {
  *
  * @param string $token  Token.
  * @param string $method GET|POST.
- * @param string $path   Caminho (ex.: /me/top/artists).
+ * @param string $path   Caminho (ex.: /search).
  * @param array  $args   Query (GET) ou corpo JSON (POST).
  * @return array|WP_Error
  */
@@ -220,106 +168,6 @@ function spotinder_normalize_track( $track ) {
 }
 
 /**
- * Busca os tops do usuário logo após o OAuth.
- *
- * @param string $token Access token.
- * @return array{artists:array,tracks:array}|WP_Error
- */
-function spotinder_spotify_fetch_tops( $token ) {
-	$artists = spotinder_spotify_request(
-		$token,
-		'GET',
-		'/me/top/artists',
-		array(
-			'limit'      => 30,
-			'time_range' => 'medium_term',
-		)
-	);
-	if ( is_wp_error( $artists ) ) {
-		return $artists;
-	}
-
-	$tracks = spotinder_spotify_request(
-		$token,
-		'GET',
-		'/me/top/tracks',
-		array(
-			'limit'      => 50,
-			'time_range' => 'medium_term',
-		)
-	);
-	if ( is_wp_error( $tracks ) ) {
-		return $tracks;
-	}
-
-	// Conta nova ou pouco usada: tenta o período curto.
-	if ( empty( $artists['items'] ) ) {
-		$short = spotinder_spotify_request(
-			$token,
-			'GET',
-			'/me/top/artists',
-			array(
-				'limit'      => 30,
-				'time_range' => 'short_term',
-			)
-		);
-		if ( ! is_wp_error( $short ) ) {
-			$artists = $short;
-		}
-	}
-
-	return array(
-		'artists' => array_values( array_filter( array_map( 'spotinder_normalize_artist', (array) ( $artists['items'] ?? array() ) ), fn( $a ) => $a['id'] ) ),
-		'tracks'  => array_values( array_filter( array_map( 'spotinder_normalize_track', (array) ( $tracks['items'] ?? array() ) ), fn( $t ) => $t['id'] ) ),
-	);
-}
-
-/**
- * Cria uma playlist privada na conta do usuário e adiciona as faixas.
- * Tenta os endpoints atuais (fev/2026) e cai para os antigos se necessário.
- *
- * @param string   $token       Access token com playlist-modify-private.
- * @param string   $name        Nome.
- * @param string   $description Descrição.
- * @param string[] $track_ids   IDs das faixas.
- * @return string|WP_Error URL da playlist.
- */
-function spotinder_spotify_create_playlist( $token, $name, $description, $track_ids ) {
-	$payload = array(
-		'name'        => $name,
-		'description' => $description,
-		'public'      => false,
-	);
-
-	$playlist = spotinder_spotify_request( $token, 'POST', '/me/playlists', $payload );
-
-	if ( is_wp_error( $playlist ) ) {
-		$me = spotinder_spotify_request( $token, 'GET', '/me' );
-		if ( is_wp_error( $me ) ) {
-			return $me;
-		}
-		$playlist = spotinder_spotify_request( $token, 'POST', '/users/' . rawurlencode( $me['id'] ) . '/playlists', $payload );
-		if ( is_wp_error( $playlist ) ) {
-			return $playlist;
-		}
-	}
-
-	$uris = array_map( fn( $id ) => 'spotify:track:' . $id, array_slice( array_filter( $track_ids ), 0, 100 ) );
-
-	if ( $uris ) {
-		$added = spotinder_spotify_request( $token, 'POST', '/playlists/' . rawurlencode( $playlist['id'] ) . '/items', array( 'uris' => $uris ) );
-		if ( is_wp_error( $added ) ) {
-			$added = spotinder_spotify_request( $token, 'POST', '/playlists/' . rawurlencode( $playlist['id'] ) . '/tracks', array( 'uris' => $uris ) );
-		}
-		if ( is_wp_error( $added ) ) {
-			return $added;
-		}
-	}
-
-	return $playlist['external_urls']['spotify'] ?? 'https://open.spotify.com/playlist/' . $playlist['id'];
-}
-
-/**
  * Busca no catálogo (token do app). Limite de 10 itens desde fev/2026.
  *
  * @param string $query Termo.
@@ -348,4 +196,78 @@ function spotinder_spotify_search_one( $query, $type ) {
 
 	$items = $data[ $type . 's' ]['items'] ?? array();
 	return $items ? $items[0] : new WP_Error( 'spotify_not_found', 'Nada encontrado para ' . $query );
+}
+
+/**
+ * Busca do seletor de artistas/músicas do perfil. Cada resultado fica em cache
+ * por um dia: ao salvar o perfil, o servidor confere os IDs escolhidos sem
+ * consultar o Spotify de novo e sem confiar em nomes/imagens vindos do navegador.
+ *
+ * @param string $query Termo digitado.
+ * @param string $type  artist|track.
+ * @return array[]|WP_Error Itens normalizados.
+ */
+function spotinder_spotify_search( $query, $type ) {
+	$token = spotinder_spotify_app_token();
+	if ( is_wp_error( $token ) ) {
+		return $token;
+	}
+
+	$data = spotinder_spotify_request(
+		$token,
+		'GET',
+		'/search',
+		array(
+			'q'      => $query,
+			'type'   => $type,
+			'limit'  => 10,
+			'market' => 'BR',
+		)
+	);
+	if ( is_wp_error( $data ) ) {
+		return $data;
+	}
+
+	$normalize = 'artist' === $type ? 'spotinder_normalize_artist' : 'spotinder_normalize_track';
+	$items     = array();
+	foreach ( (array) ( $data[ $type . 's' ]['items'] ?? array() ) as $raw ) {
+		$item = $normalize( (array) $raw );
+		if ( $item['id'] ) {
+			set_transient( "spotinder_cat_{$type}_{$item['id']}", $item, DAY_IN_SECONDS );
+			$items[] = $item;
+		}
+	}
+	return $items;
+}
+
+/**
+ * Um artista/faixa do catálogo pelo ID (cache da busca ou consulta direta).
+ *
+ * @param string $type artist|track.
+ * @param string $id   ID do Spotify.
+ * @return array|WP_Error Item normalizado.
+ */
+function spotinder_spotify_catalog_item( $type, $id ) {
+	if ( ! preg_match( '/^[A-Za-z0-9]{22}$/', (string) $id ) ) {
+		return new WP_Error( 'spotify_id', 'ID inválido.' );
+	}
+
+	$cached = get_transient( "spotinder_cat_{$type}_{$id}" );
+	if ( $cached ) {
+		return $cached;
+	}
+
+	$token = spotinder_spotify_app_token();
+	if ( is_wp_error( $token ) ) {
+		return $token;
+	}
+
+	$raw = spotinder_spotify_request( $token, 'GET', "/{$type}s/{$id}", array( 'market' => 'BR' ) );
+	if ( is_wp_error( $raw ) ) {
+		return $raw;
+	}
+
+	$item = 'artist' === $type ? spotinder_normalize_artist( $raw ) : spotinder_normalize_track( $raw );
+	set_transient( "spotinder_cat_{$type}_{$id}", $item, DAY_IN_SECONDS );
+	return $item;
 }

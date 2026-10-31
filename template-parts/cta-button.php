@@ -1,6 +1,6 @@
 <?php
 /**
- * Botão principal: conecta o Spotify (visitante) ou leva ao app (membro).
+ * Botão principal: entra com o Google (visitante) ou leva ao app (membro).
  *
  * @package Spotinder
  *
@@ -19,7 +19,7 @@ $spotinder_class  = $args['class'] ?? 'btn-primary btn-lg';
 	</a>
 <?php else : ?>
 	<a href="<?php echo esc_url( spotinder_login_url() ); ?>" class="<?php echo esc_attr( $spotinder_class ); ?>" data-no-swup>
-		<?php echo spotinder_icon( 'spotify', 'size-5' ); // phpcs:ignore ?>
+		<?php echo spotinder_icon( 'google', 'size-5' ); // phpcs:ignore ?>
 		<span><?php echo esc_html( $args['label'] ?? spotinder_opt( 'login_label' ) ); ?></span>
 	</a>
 <?php endif; ?>

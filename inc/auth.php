@@ -1,20 +1,16 @@
 <?php
 /**
- * Login exclusivo via Spotify (Authorization Code Flow) e ações OAuth pontuais.
+ * Login exclusivo via Google (OpenID Connect).
  *
  * Rotas (query var spotinder_auth):
- *  - login     → pede apenas user-top-read
- *  - playlist  → pede playlist-modify-private só quando a pessoa clica em "salvar playlist"
- *  - callback  → Redirect URI cadastrada no Spotify
+ *  - login     → pede apenas "openid profile"
+ *  - callback  → Redirect URI cadastrada no Google Cloud
  *  - logout
  *
  * @package Spotinder
  */
 
 defined( 'ABSPATH' ) || exit;
-
-const SPOTINDER_SCOPE_LOGIN    = 'user-top-read';
-const SPOTINDER_SCOPE_PLAYLIST = 'playlist-modify-private';
 
 add_filter(
 	'query_vars',
@@ -43,15 +39,7 @@ function spotinder_handle_auth() {
 			if ( is_user_logged_in() && spotinder_is_member() && ! $redirect ) {
 				spotinder_redirect( spotinder_page_url( 'discover' ) );
 			}
-			spotinder_start_oauth( SPOTINDER_SCOPE_LOGIN, array( 'intent' => 'login', 'redirect' => $redirect ) );
-			break;
-
-		case 'playlist':
-			$match_id = isset( $_GET['match'] ) ? absint( $_GET['match'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			if ( ! is_user_logged_in() || ! $match_id || ! spotinder_get_match_row( $match_id, get_current_user_id() ) ) {
-				spotinder_redirect( spotinder_page_url( 'matches' ) );
-			}
-			spotinder_start_oauth( SPOTINDER_SCOPE_PLAYLIST, array( 'intent' => 'playlist', 'match' => $match_id ) );
+			spotinder_start_oauth( array( 'redirect' => $redirect ) );
 			break;
 
 		case 'callback':
@@ -85,11 +73,10 @@ function spotinder_redirect( $url, $notice = '' ) {
 /**
  * Inicia o OAuth com estado assinado e vinculado ao navegador.
  *
- * @param string $scope   Escopos.
- * @param array  $payload Dados a recuperar no callback.
+ * @param array $payload Dados a recuperar no callback.
  */
-function spotinder_start_oauth( $scope, $payload ) {
-	if ( ! spotinder_spotify_configured() ) {
+function spotinder_start_oauth( $payload ) {
+	if ( ! spotinder_google_configured() ) {
 		spotinder_redirect( home_url( '/' ), 'not_configured' );
 	}
 
@@ -97,6 +84,7 @@ function spotinder_start_oauth( $scope, $payload ) {
 	$browser = wp_generate_password( 32, false );
 
 	$payload['browser'] = wp_hash( $browser );
+	$payload['nonce']   = wp_generate_password( 32, false );
 	set_transient( 'spotinder_state_' . $state, $payload, 10 * MINUTE_IN_SECONDS );
 
 	setcookie(
@@ -111,13 +99,13 @@ function spotinder_start_oauth( $scope, $payload ) {
 		)
 	);
 
-	wp_redirect( spotinder_spotify_authorize_url( $scope, $state ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
+	wp_redirect( spotinder_google_authorize_url( $state, $payload['nonce'] ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 	exit;
 }
 
 /**
  * Lê um parâmetro da query string original. Necessário porque o WordPress remove
- * $_GET['error'] em WP::parse_request() — e é por "error" que o Spotify avisa cancelamentos.
+ * $_GET['error'] em WP::parse_request() — e é por "error" que o Google avisa cancelamentos.
  *
  * @param string $key Parâmetro.
  */
@@ -127,7 +115,7 @@ function spotinder_raw_query_arg( $key ) {
 }
 
 /**
- * Callback que chegou por outro host (ex.: http://127.0.0.1/... em desenvolvimento):
+ * Callback que chegou por outro host (ex.: http://localhost/... em desenvolvimento):
  * os cookies de sessão e do OAuth pertencem ao domínio do site, então repassa
  * code/state/error para lá. O destino é sempre o próprio home_url().
  */
@@ -152,10 +140,10 @@ function spotinder_forward_foreign_callback() {
 }
 
 /**
- * Callback do Spotify.
+ * Callback do Google.
  */
 function spotinder_oauth_callback() {
-	// Validado pelo state + cookie (não há nonce: a requisição vem do Spotify).
+	// Validado pelo state + cookie (não há nonce do WP: a requisição vem do Google).
 	$state = spotinder_raw_query_arg( 'state' );
 	$code  = spotinder_raw_query_arg( 'code' );
 	$error = sanitize_key( spotinder_raw_query_arg( 'error' ) );
@@ -171,44 +159,27 @@ function spotinder_oauth_callback() {
 	}
 
 	if ( $error || ! $code ) {
-		$back = 'playlist' === $payload['intent'] ? spotinder_page_url( 'matches' ) : home_url( '/' );
-		spotinder_redirect( $back, 'access_denied' === $error ? 'cancelled' : 'spotify_error' );
+		spotinder_redirect( home_url( '/' ), 'access_denied' === $error ? 'cancelled' : 'login_error' );
 	}
 
-	$token = spotinder_spotify_exchange_code( $code );
-	if ( is_wp_error( $token ) ) {
-		spotinder_redirect( home_url( '/' ), 'spotify_error' );
+	$account = spotinder_google_exchange_code( $code, (string) ( $payload['nonce'] ?? '' ) );
+	if ( is_wp_error( $account ) ) {
+		spotinder_redirect( home_url( '/' ), 'login_error' );
 	}
 
-	if ( 'playlist' === $payload['intent'] ) {
-		spotinder_finish_playlist( $token, (int) $payload['match'] );
-	}
-
-	spotinder_finish_login( $token, $payload['redirect'] ?? '' );
+	spotinder_finish_login( $account, $payload['redirect'] ?? '' );
 }
 
 /**
- * Conclui o login: lê /me + tops, cria/atualiza o membro e autentica.
+ * Conclui o login: cria/atualiza o membro e autentica.
  *
- * @param string $token    Access token (descartado ao fim da requisição).
+ * @param array  $account  Conta Google (spotinder_google_exchange_code()).
  * @param string $redirect Destino solicitado.
  */
-function spotinder_finish_login( $token, $redirect ) {
-	$me = spotinder_spotify_request( $token, 'GET', '/me' );
-	if ( is_wp_error( $me ) ) {
-		$status = $me->get_error_data()['status'] ?? 0;
-		// 403 em modo de desenvolvimento = conta não está na lista de usuários do app.
-		spotinder_redirect( home_url( '/' ), 403 === $status ? 'not_allowlisted' : 'spotify_error' );
-	}
-
-	$tops = spotinder_spotify_fetch_tops( $token );
-	if ( is_wp_error( $tops ) ) {
-		spotinder_redirect( home_url( '/' ), 'spotify_error' );
-	}
-
-	$user_id = spotinder_upsert_member( $me, $tops );
+function spotinder_finish_login( $account, $redirect ) {
+	$user_id = spotinder_upsert_member( $account );
 	if ( is_wp_error( $user_id ) ) {
-		spotinder_redirect( home_url( '/' ), 'spotinder_banned' === $user_id->get_error_code() ? 'banned' : 'spotify_error' );
+		spotinder_redirect( home_url( '/' ), 'spotinder_banned' === $user_id->get_error_code() ? 'banned' : 'login_error' );
 	}
 
 	wp_set_current_user( $user_id );
@@ -219,42 +190,7 @@ function spotinder_finish_login( $token, $redirect ) {
 	}
 
 	$target = $redirect ? wp_validate_redirect( $redirect, spotinder_page_url( 'discover' ) ) : spotinder_page_url( 'discover' );
-	spotinder_redirect( $target, empty( $tops['artists'] ) ? 'no_artists' : 'synced' );
-}
-
-/**
- * Salva a playlist em comum na conta do usuário.
- *
- * @param string $token    Access token com playlist-modify-private.
- * @param int    $match_id Match.
- */
-function spotinder_finish_playlist( $token, $match_id ) {
-	$user_id = get_current_user_id();
-	$back    = spotinder_page_url( 'matches' ) . '#match-' . $match_id;
-	$match   = $user_id ? spotinder_get_match_row( $match_id, $user_id ) : null;
-
-	if ( ! $match ) {
-		spotinder_redirect( spotinder_page_url( 'matches' ) );
-	}
-
-	$other    = (int) ( (int) $match->user_a === $user_id ? $match->user_b : $match->user_a );
-	$playlist = spotinder_common_playlist( $user_id, $other );
-	$name     = sprintf( '%s × %s · %s', get_userdata( $user_id )->display_name, get_userdata( $other )->display_name, spotinder_brand() );
-
-	$url = spotinder_spotify_create_playlist(
-		$token,
-		$name,
-		sprintf( 'Playlist em comum criada pelo %s.', spotinder_brand() ),
-		wp_list_pluck( $playlist, 'id' )
-	);
-
-	if ( is_wp_error( $url ) ) {
-		wp_safe_redirect( add_query_arg( 'sp_notice', 'playlist_error', spotinder_page_url( 'matches' ) ) . '#match-' . $match_id );
-		exit;
-	}
-
-	wp_safe_redirect( add_query_arg( 'sp_notice', 'playlist_saved', spotinder_page_url( 'matches' ) ) . '#match-' . $match_id );
-	exit;
+	spotinder_redirect( $target );
 }
 
 /**
@@ -262,16 +198,11 @@ function spotinder_finish_playlist( $token, $match_id ) {
  */
 function spotinder_notices() {
 	return array(
-		'not_configured'  => array( 'error', 'O login com Spotify ainda não foi configurado pela equipe.' ),
-		'invalid_state'   => array( 'error', 'A sessão de login expirou. Tente de novo.' ),
-		'cancelled'       => array( 'info', 'Tudo bem! Você cancelou a conexão com o Spotify.' ),
-		'spotify_error'   => array( 'error', 'O Spotify não respondeu como esperado. Tente novamente em instantes.' ),
-		'not_allowlisted' => array( 'error', 'Estamos em fase de testes fechados e sua conta Spotify ainda não está liberada.' ),
-		'banned'          => array( 'error', 'Esta conta foi suspensa por violar os Termos de Uso.' ),
-		'no_artists'      => array( 'info', 'Seu Spotify ainda não tem artistas mais ouvidos suficientes. Ouça um pouco mais e atualize seu perfil depois.' ),
-		'synced'          => array( 'success', 'Seus artistas foram atualizados.' ),
-		'playlist_saved'  => array( 'success', 'Playlist salva na sua conta do Spotify!' ),
-		'playlist_error'  => array( 'error', 'Não foi possível salvar a playlist no Spotify.' ),
-		'deleted'         => array( 'success', 'Sua conta e todos os seus dados foram apagados.' ),
+		'not_configured' => array( 'error', 'O login com Google ainda não foi configurado pela equipe.' ),
+		'invalid_state'  => array( 'error', 'A sessão de login expirou. Tente de novo.' ),
+		'cancelled'      => array( 'info', 'Tudo bem! Você cancelou a entrada com o Google.' ),
+		'login_error'    => array( 'error', 'O Google não respondeu como esperado. Tente novamente em instantes.' ),
+		'banned'         => array( 'error', 'Esta conta foi suspensa por violar os Termos de Uso.' ),
+		'deleted'        => array( 'success', 'Sua conta e todos os seus dados foram apagados.' ),
 	);
 }

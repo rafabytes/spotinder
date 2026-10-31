@@ -5,7 +5,7 @@ import { gradientFor } from './ui';
  * Player oficial do Spotify (iFrame API).
  * - Sem login no Spotify: toca uma prévia de ~30s; com Premium logado: a faixa completa.
  * - Exibe capa, metadados e link de volta para o Spotify (exigências da Developer Policy II.4/II.5).
- * Faixas sem ID (ex.: perfis de teste não sincronizados) viram um cartão com link de busca.
+ * Faixas sem ID (ex.: perfis de teste ainda sem dados do catálogo) viram um cartão com link de busca.
  */
 let apiPromise = null;
 

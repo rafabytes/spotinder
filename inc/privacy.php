@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Exportador e apagador (Ferramentas > Exportar/Apagar dados pessoais).
- * Membros não têm e-mail, então o admin busca pelo login (sp_...).
+ * Membros não têm e-mail, então o admin busca pelo login (g_..., ou sp_... nas contas antigas).
  */
 add_filter(
 	'wp_privacy_personal_data_exporters',
@@ -61,7 +61,7 @@ add_filter(
 				if ( $user && spotinder_is_member( $user->ID ) ) {
 					spotinder_purge_member_rows( $user->ID );
 					spotinder_delete_photo_file( $user->ID );
-					foreach ( array( 'spotinder_top_artists', 'spotinder_top_tracks', 'spotinder_socials', 'spotinder_bio', 'spotinder_city', 'spotinder_intentions', 'spotinder_spotify_url', 'spotinder_spotify_photo', 'spotinder_photo_source', 'spotinder_region', 'spotinder_max_distance' ) as $key ) {
+					foreach ( array( 'spotinder_top_artists', 'spotinder_top_tracks', 'spotinder_socials', 'spotinder_bio', 'spotinder_city', 'spotinder_intentions', 'spotinder_spotify_url', 'spotinder_spotify_photo', 'spotinder_google_photo', 'spotinder_photo_source', 'spotinder_region', 'spotinder_max_distance' ) as $key ) {
 						delete_user_meta( $user->ID, $key );
 					}
 					update_user_meta( $user->ID, 'spotinder_visible', 0 );
@@ -88,7 +88,7 @@ add_action(
 		if ( function_exists( 'wp_add_privacy_policy_content' ) ) {
 			wp_add_privacy_policy_content(
 				'Spotinder',
-				'<p>O tema Spotinder cria contas apenas via Spotify (escopo user-top-read), guarda o ID do Spotify, nome público, artistas e músicas mais ouvidos, além do que o membro preenche (bio, cidade, intenções e redes sociais). Tokens do Spotify não são armazenados. Membros podem exportar e apagar seus dados em Perfil > Privacidade. Contas inativas são apagadas automaticamente após o prazo configurado em Spotinder > Configurações.</p>'
+				'<p>O tema Spotinder cria contas apenas via login com Google (escopos openid e profile, sem e-mail) e guarda o ID da conta Google, o nome e o endereço da foto pública, além do que o membro preenche (artistas e músicas favoritos, bio, cidade, intenções e redes sociais). Tokens do Google não são armazenados. Artistas e músicas vêm do catálogo público do Spotify, consultado com a credencial do próprio site. Membros podem exportar e apagar seus dados em Perfil > Privacidade. Contas inativas são apagadas automaticamente após o prazo configurado em Spotinder > Configurações.</p>'
 			);
 		}
 	}
@@ -122,8 +122,15 @@ function spotinder_run_retention() {
 			'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 				'relation' => 'AND',
 				array(
-					'key'     => 'spotinder_spotify_id',
-					'compare' => 'EXISTS',
+					'relation' => 'OR',
+					array(
+						'key'     => 'spotinder_google_id',
+						'compare' => 'EXISTS',
+					),
+					array(
+						'key'     => 'spotinder_spotify_id',
+						'compare' => 'EXISTS',
+					),
 				),
 				array(
 					'key'     => 'spotinder_is_demo',

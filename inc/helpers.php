@@ -124,7 +124,7 @@ function spotinder_page_url( $key ) {
 }
 
 /**
- * URL que inicia o login com Spotify.
+ * URL que inicia o login com Google.
  *
  * @param string $redirect Para onde voltar depois.
  */
@@ -157,12 +157,12 @@ function spotinder_default_redirect_uri() {
 }
 
 /**
- * URI de redirecionamento enviada ao Spotify. Pode ser sobrescrita no painel — útil em
- * desenvolvimento, já que o Spotify só aceita HTTPS ou loopback (http://127.0.0.1).
+ * URI de redirecionamento enviada ao Google. Pode ser sobrescrita no painel — útil em
+ * desenvolvimento, já que o Google só aceita HTTPS ou localhost (http://localhost).
  * Quando o callback chega por outro host, auth.php o repassa ao domínio do site.
  */
 function spotinder_redirect_uri() {
-	$override = trim( (string) spotinder_opt( 'spotify_redirect_uri' ) );
+	$override = trim( (string) spotinder_opt( 'google_redirect_uri' ) );
 
 	// Proteção para migrações (banco local → produção): site em HTTPS nunca usa loopback.
 	$host = (string) wp_parse_url( $override, PHP_URL_HOST );
@@ -174,13 +174,14 @@ function spotinder_redirect_uri() {
 }
 
 /**
- * O usuário é um membro (conta criada via Spotify)?
+ * O usuário é um membro (conta criada via Google)?
+ * O ID do Spotify identifica perfis de teste e contas antigas, do login pelo Spotify.
  *
  * @param int $user_id Usuário.
  */
 function spotinder_is_member( $user_id = 0 ) {
 	$user_id = $user_id ? $user_id : get_current_user_id();
-	return $user_id && (bool) get_user_meta( $user_id, 'spotinder_spotify_id', true );
+	return $user_id && ( get_user_meta( $user_id, 'spotinder_google_id', true ) || get_user_meta( $user_id, 'spotinder_spotify_id', true ) );
 }
 
 /**
@@ -257,6 +258,7 @@ function spotinder_initials( $name ) {
  */
 function spotinder_icon( $name, $class = 'size-5' ) {
 	$paths = array(
+		'google'   => '<path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 12h-8"/>',
 		'spotify'  => '<circle cx="12" cy="12" r="10"/><path d="M7 9.5c3.5-1 7.5-.6 10.5 1.2M7.5 12.8c2.8-.8 6-.4 8.5 1M8 15.8c2.2-.5 4.6-.3 6.5.8"/>',
 		'heart'    => '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/>',
 		'x'        => '<path d="M6 6l12 12M18 6 6 18"/>',
@@ -290,7 +292,18 @@ function spotinder_icon( $name, $class = 'size-5' ) {
 add_shortcode(
 	'spotinder_opcao',
 	function ( $atts ) {
-		$atts    = shortcode_atts( array( 'campo' => '' ), $atts );
+		$atts = shortcode_atts( array( 'campo' => '' ), $atts );
+
+		// Limites fixos do tema (inc/members.php).
+		$limits = array(
+			'min_artists' => SPOTINDER_MIN_ARTISTS,
+			'max_artists' => SPOTINDER_MAX_ARTISTS,
+			'max_tracks'  => SPOTINDER_MAX_TRACKS,
+		);
+		if ( isset( $limits[ $atts['campo'] ] ) ) {
+			return (string) $limits[ $atts['campo'] ];
+		}
+
 		$allowed = array( 'brand_name', 'min_age', 'inactive_delete_days', 'inactive_hide_days', 'policy_version', 'top_artists_shown' );
 		return in_array( $atts['campo'], $allowed, true ) ? esc_html( (string) spotinder_opt( $atts['campo'] ) ) : '';
 	}

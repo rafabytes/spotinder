@@ -5,7 +5,7 @@ import { ArtistTile, Avatar, CompatRing, SpotifyAttribution, gradientFor } from 
 const THRESHOLD = 110;
 
 /**
- * Cartão arrastável: artistas mais ouvidos em destaque e foto opcional da pessoa.
+ * Cartão arrastável: artistas favoritos em destaque e foto opcional da pessoa.
  *
  * @param {object}   props.profile  Perfil (spotinder_member_payload, contexto "card").
  * @param {boolean}  props.active   É o cartão do topo?
@@ -101,9 +101,9 @@ export default function SwipeCard({ profile, active, depth, fling, onDone }) {
 			onClickCapture={onClickCapture}
 			onDragStart={(e) => e.preventDefault()}
 		>
-			{/* Mosaico: o artista mais ouvido em destaque + os dois seguintes. */}
+			{/* Mosaico: o primeiro artista da lista em destaque + os dois seguintes. */}
 			<div className="grid h-[44%] shrink-0 grid-cols-3 grid-rows-2 gap-0.5 bg-ink">
-				{top.length === 0 && <div className="col-span-3 row-span-2 grid place-items-center text-sm text-white/40">Ainda sem artistas mais ouvidos</div>}
+				{top.length === 0 && <div className="col-span-3 row-span-2 grid place-items-center text-sm text-white/40">Ainda sem artistas favoritos</div>}
 				{top.map((artist, i) => (
 					<ArtistTile
 						key={artist.id || artist.name}

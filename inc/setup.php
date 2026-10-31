@@ -55,6 +55,31 @@ add_action(
 );
 
 /**
+ * O bundle já sai minificado pelo Parcel. O minificador de JS do LiteSpeed
+ * Cache corrompe o código do React (apaga um `;` de um `for(;;)`) e o atraso
+ * de JS faria `window.SPOTINDER` chegar fora de ordem: tira o bundle e a
+ * configuração inline de qualquer otimização de JS de plugins.
+ */
+add_filter(
+	'wp_script_attributes',
+	function ( $attributes ) {
+		if ( isset( $attributes['id'] ) && 'spotinder-js' === $attributes['id'] ) {
+			$attributes['data-no-optimize'] = '1';
+		}
+		return $attributes;
+	}
+);
+add_filter(
+	'wp_inline_script_attributes',
+	function ( $attributes ) {
+		if ( isset( $attributes['id'] ) && 'spotinder-js-before' === $attributes['id'] ) {
+			$attributes['data-no-optimize'] = '1';
+		}
+		return $attributes;
+	}
+);
+
+/**
  * Configuração e textos repassados ao React.
  */
 function spotinder_js_config() {
@@ -114,12 +139,17 @@ function spotinder_js_config() {
 			'safety'   => spotinder_page_url( 'safety' ),
 			'login'    => spotinder_login_url(),
 			'logout'   => spotinder_logout_url(),
-			'refresh'  => spotinder_login_url( spotinder_page_url( 'profile' ) ),
 		),
 		'strings'     => $strings,
 		'intentions'  => array_values( (array) spotinder_opt( 'intentions' ) ),
 		'inviteTypes' => array_values( (array) spotinder_opt( 'invite_types' ) ),
 		'safetyTips'  => wp_list_pluck( (array) spotinder_opt( 'safety_tips' ), 'text' ),
+		'music'       => array(
+			'catalog'    => spotinder_spotify_configured(),
+			'minArtists' => SPOTINDER_MIN_ARTISTS,
+			'maxArtists' => SPOTINDER_MAX_ARTISTS,
+			'maxTracks'  => SPOTINDER_MAX_TRACKS,
+		),
 		'socials'     => spotinder_social_networks(),
 		'reasons'     => spotinder_report_reasons(),
 	);
@@ -143,7 +173,7 @@ add_action(
 );
 
 /**
- * Membros (contas via Spotify) não usam o wp-admin nem a barra de administração.
+ * Membros (contas via Google) não usam o wp-admin nem a barra de administração.
  */
 add_filter(
 	'show_admin_bar',
@@ -185,7 +215,7 @@ add_action(
 );
 
 /**
- * O único jeito de criar conta é pelo Spotify: desliga o cadastro nativo.
+ * O único jeito de criar conta é pelo Google: desliga o cadastro nativo.
  */
 add_filter( 'pre_option_users_can_register', '__return_zero' );
 add_filter(

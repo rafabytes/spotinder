@@ -380,7 +380,7 @@ body.login::after {
 	background: rgb(255 255 255 / 0.08);
 }
 
-/* Caixa "Membro? Entre com o Spotify" (inc/login.php). */
+/* Caixa "Membro? Entre com o Google" (inc/login.php). */
 .spotinder-member-login {
 	margin: 0 0 1rem;
 	padding: 1.25rem;
@@ -396,7 +396,7 @@ body.login::after {
 	color: rgb(255 255 255 / 0.75);
 }
 
-.spotinder-member-login .spotinder-spotify-btn {
+.spotinder-member-login .spotinder-google-btn {
 	display: inline-flex;
 	align-items: center;
 	gap: 0.5rem;
@@ -409,11 +409,11 @@ body.login::after {
 	box-shadow: 0 10px 24px color-mix(in srgb, var(--brand) 35%, transparent);
 }
 
-.spotinder-member-login .spotinder-spotify-btn:hover {
+.spotinder-member-login .spotinder-google-btn:hover {
 	filter: brightness(1.1);
 }
 
-.spotinder-member-login .spotinder-spotify-btn svg {
+.spotinder-member-login .spotinder-google-btn svg {
 	width: 20px;
 	height: 20px;
 }

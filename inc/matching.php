@@ -3,7 +3,7 @@
  * Compatibilidade, deck, swipes, matches, trilha sonora e playlist em comum.
  *
  * O cálculo é propositalmente simples e explicável: interseção de artistas
- * (ponderada pela posição no top), músicas e gêneros em comum. Nada é usado
+ * (ponderada pela ordem em que cada um escolheu), músicas e gêneros em comum. Nada é usado
  * para publicidade nem salvo como "perfil comportamental".
  *
  * @package Spotinder
@@ -48,7 +48,7 @@ function spotinder_compat( $a, $b ) {
 		$n   = max( 1, count( $list ) );
 		$out = array();
 		foreach ( array_values( $list ) as $i => $item ) {
-			// 1.0 para o mais ouvido, caindo até 0.5 no fim da lista.
+			// 1.0 para o primeiro da lista, caindo até 0.5 no fim.
 			$out[ spotinder_akey( $item['name'] ) ] = 1 - ( $i / $n ) * 0.5;
 		}
 		return $out;
@@ -295,8 +295,8 @@ function spotinder_create_match( $a, $b ) {
 
 /**
  * Escolhe "a música de vocês".
- * Ordem: faixa no top dos dois → faixa de artista em comum → faixa do top de um
- * cujo artista o outro também ouve → faixa mais ouvida de A.
+ * Ordem: faixa favorita dos dois → faixa de artista em comum → primeira favorita
+ * de quem escolheu músicas.
  *
  * @param int $a Usuário.
  * @param int $b Usuário.
@@ -308,7 +308,7 @@ function spotinder_pick_soundtrack( $a, $b ) {
 	$keys_b = array_flip( array_map( 'spotinder_tkey', $tb ) );
 	foreach ( $ta as $track ) {
 		if ( isset( $keys_b[ spotinder_tkey( $track ) ] ) ) {
-			return $track + array( 'reason' => 'Essa música está no top de vocês dois.' );
+			return $track + array( 'reason' => 'Essa música está entre as favoritas de vocês dois.' );
 		}
 	}
 
@@ -319,7 +319,7 @@ function spotinder_pick_soundtrack( $a, $b ) {
 			foreach ( $list as $track ) {
 				foreach ( $track['artists'] as $artist ) {
 					if ( isset( $shared[ spotinder_akey( $artist['name'] ) ] ) ) {
-						return $track + array( 'reason' => sprintf( 'De %s, artista que vocês dois ouvem muito.', $artist['name'] ) );
+						return $track + array( 'reason' => sprintf( 'De %s, artista que vocês dois adoram.', $artist['name'] ) );
 					}
 				}
 			}
@@ -329,7 +329,7 @@ function spotinder_pick_soundtrack( $a, $b ) {
 	$pool = $ta ? $ta : $tb;
 	if ( $pool ) {
 		$owner = $ta ? $a : $b;
-		return $pool[0] + array( 'reason' => sprintf( 'A mais ouvida de %s — um bom começo.', get_userdata( $owner )->display_name ) );
+		return $pool[0] + array( 'reason' => sprintf( 'A favorita de %s — um bom começo.', get_userdata( $owner )->display_name ) );
 	}
 
 	return null;
@@ -370,7 +370,7 @@ function spotinder_common_playlist( $a, $b, $limit = 30 ) {
 
 	foreach ( $ta as $t ) {
 		if ( isset( $keys_b[ spotinder_tkey( $t ) ] ) ) {
-			$add( $t, 'No top de vocês dois', 'both' );
+			$add( $t, 'Favorita de vocês dois', 'both' );
 		}
 	}
 
@@ -481,21 +481,14 @@ function spotinder_match_detail( $match_id, $user_id ) {
 	$wpdb->update( spotinder_table( 'matches' ), array( $is_a ? 'seen_a' : 'seen_b' => 1 ), array( 'id' => $match_id ) );
 
 	return array(
-		'id'           => (int) $row->id,
-		'score'        => (int) $row->score,
-		'createdAt'    => spotinder_date( $row->created_at, 'd/m/Y' ),
-		'partner'      => spotinder_member_payload( $other, $user_id, 'match' ),
-		'soundtrack'   => json_decode( (string) $row->soundtrack, true ),
-		'playlist'     => spotinder_common_playlist( $user_id, $other ),
-		'playlistSave' => add_query_arg(
-			array(
-				'spotinder_auth' => 'playlist',
-				'match'          => (int) $row->id,
-			),
-			home_url( '/' )
-		),
-		'invites'      => spotinder_get_invites( $match_id, $user_id ),
-		'events'       => spotinder_events_for_pair( $user_id, $other ),
+		'id'         => (int) $row->id,
+		'score'      => (int) $row->score,
+		'createdAt'  => spotinder_date( $row->created_at, 'd/m/Y' ),
+		'partner'    => spotinder_member_payload( $other, $user_id, 'match' ),
+		'soundtrack' => json_decode( (string) $row->soundtrack, true ),
+		'playlist'   => spotinder_common_playlist( $user_id, $other ),
+		'invites'    => spotinder_get_invites( $match_id, $user_id ),
+		'events'     => spotinder_events_for_pair( $user_id, $other ),
 	);
 }
 

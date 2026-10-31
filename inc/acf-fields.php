@@ -193,27 +193,40 @@ function spotinder_register_acf() {
 				spotinder_acf_field( 'share_description', 'Descrição padrão para compartilhamento e buscadores', 'textarea', array( 'instructions' => 'Até ~160 caracteres. Histórias e eventos usam o próprio resumo.' ) ),
 				spotinder_acf_field( 'share_twitter', 'Perfil no X/Twitter (opcional)', 'text', array( 'placeholder' => '@perfil' ) ),
 
-				spotinder_acf_tab( 'spotify', 'Spotify API' ),
+				spotinder_acf_tab( 'google', 'Login com Google' ),
 				spotinder_acf_field(
-					'spotify_help',
+					'google_help',
 					'Como configurar',
 					'message',
 					array(
-						'message' => "1. Crie um app em <a href=\"https://developer.spotify.com/dashboard\" target=\"_blank\">developer.spotify.com/dashboard</a> (marque <em>Web API</em>).<br>2. Cadastre no app a Redirect URI <strong>em uso</strong>, exatamente assim:<br><code style=\"user-select:all\">{$redirect_uri}</code><br>3. O Spotify só aceita Redirect URI em <strong>HTTPS</strong> ou em loopback (<code>http://127.0.0.1</code>). Em ambiente local com domínio <code>http://*.local</code>, preencha o campo \"Redirect URI (sobrescrever)\" abaixo com o endereço do mesmo site via 127.0.0.1 (com a porta explícita, ex.: <code>http://127.0.0.1:80/pasta-do-site/?spotinder_auth=callback</code> — o painel do Spotify recusa loopback sem porta), cadastre esse endereço também no Spotify e o tema repassa o retorno para o domínio do site. Em produção (HTTPS), deixe o campo vazio. O app pode ter várias Redirect URIs cadastradas ao mesmo tempo.<br>4. Em modo de desenvolvimento, só usuários adicionados em <em>User Management</em> conseguem entrar (limite atual: 5) e o dono do app precisa de Spotify Premium.<br>5. Escopos pedidos: <code>user-top-read</code> no login e <code>playlist-modify-private</code> apenas quando alguém salva a playlist em comum. Nenhum token é armazenado.",
+						'message'  => "1. No <a href=\"https://console.cloud.google.com/apis/credentials\" target=\"_blank\">Google Cloud Console</a>, configure a <em>Tela de consentimento OAuth</em> (tipo Externo; escopos <code>openid</code> e <code>.../auth/userinfo.profile</code> — não peça e-mail) e publique o app.<br>2. Em <em>Credenciais &gt; Criar credenciais &gt; ID do cliente OAuth</em>, escolha <em>Aplicativo da Web</em> e cadastre em <em>URIs de redirecionamento autorizados</em> exatamente:<br><code style=\"user-select:all\">{$redirect_uri}</code><br>3. O Google só aceita URIs em <strong>HTTPS</strong> ou em <code>http://localhost</code>. Em ambiente local com domínio <code>http://*.local</code>, preencha o campo \"URI de redirecionamento (sobrescrever)\" abaixo com o endereço do mesmo site via localhost (ex.: <code>http://localhost/pasta-do-site/?spotinder_auth=callback</code>), cadastre esse endereço também no Google e o tema repassa o retorno para o domínio do site. Em produção (HTTPS), deixe o campo vazio.<br>4. Escopos pedidos: <code>openid profile</code> (ID da conta, nome e foto pública). Nenhum token é armazenado.",
 						'esc_html' => 0,
 					)
 				),
-				spotinder_acf_field( 'spotify_client_id', 'Client ID' ),
-				spotinder_acf_field( 'spotify_client_secret', 'Client Secret', 'password' ),
+				spotinder_acf_field( 'google_client_id', 'Client ID' ),
+				spotinder_acf_field( 'google_client_secret', 'Client Secret', 'password' ),
 				spotinder_acf_field(
-					'spotify_redirect_uri',
-					'Redirect URI (sobrescrever)',
+					'google_redirect_uri',
+					'URI de redirecionamento (sobrescrever)',
 					'url',
 					array(
 						'placeholder'  => spotinder_default_redirect_uri(),
 						'instructions' => 'Opcional. Vazio = usa a URI padrão do site (' . esc_html( spotinder_default_redirect_uri() ) . '). Use só em desenvolvimento local.',
 					)
 				),
+
+				spotinder_acf_tab( 'spotify', 'Catálogo do Spotify' ),
+				spotinder_acf_field(
+					'spotify_help',
+					'Como configurar',
+					'message',
+					array(
+						'message'  => "Usado na busca de artistas e músicas do perfil, nas fotos dos cartões do destaque e nos perfis de teste. Ninguém conecta a conta do Spotify: o site usa só a credencial do próprio app (<em>client credentials</em>), que não depende da lista de usuários liberados.<br>1. Crie um app em <a href=\"https://developer.spotify.com/dashboard\" target=\"_blank\">developer.spotify.com/dashboard</a> (marque <em>Web API</em>). O painel exige uma Redirect URI, mas ela não é usada: pode ser a do site.<br>2. Copie o Client ID e o Client Secret abaixo.",
+						'esc_html' => 0,
+					)
+				),
+				spotinder_acf_field( 'spotify_client_id', 'Client ID' ),
+				spotinder_acf_field( 'spotify_client_secret', 'Client Secret', 'password' ),
 
 				spotinder_acf_tab( 'rules', 'Regras do app' ),
 				spotinder_acf_field( 'min_age', 'Idade mínima', 'number', array( 'min' => 18, 'instructions' => 'Autodeclarada no cadastro. O Spotify proíbe apps voltados a crianças.' ) ),

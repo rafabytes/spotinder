@@ -30,13 +30,17 @@ function spotinder_defaults() {
 
 		// Ícones e compartilhamento.
 		'share_image'           => '',
-		'share_description'     => 'Conecte seu Spotify e conheça pessoas pelo que elas realmente escutam. Artistas em primeiro lugar, sem chat: amizades, bandas e companhia para shows.',
+		'share_description'     => 'Escolha seus artistas favoritos e conheça pessoas pelo que elas realmente escutam. Artistas em primeiro lugar, sem chat: amizades, bandas e companhia para shows.',
 		'share_twitter'         => '',
 
-		// Spotify.
+		// Login com Google.
+		'google_client_id'      => '',
+		'google_client_secret'  => '',
+		'google_redirect_uri'   => '',
+
+		// Catálogo do Spotify (busca de artistas e músicas).
 		'spotify_client_id'     => '',
 		'spotify_client_secret' => '',
-		'spotify_redirect_uri'  => '',
 
 		// Regras do app.
 		'min_age'               => 18,
@@ -48,17 +52,17 @@ function spotinder_defaults() {
 		'show_demo_in_deck'     => true,
 		'inactive_hide_days'    => 90,
 		'inactive_delete_days'  => 365,
-		'policy_version'        => '2026-10-30.3',
+		'policy_version'        => '2026-10-31',
 
 		// Header.
-		'login_label'           => 'Entrar com Spotify',
+		'login_label'           => 'Entrar com Google',
 		'nav_cta_label'         => 'Começar a ouvir junto',
 
 		// Home — hero.
-		'hero_eyebrow'          => 'Música em primeiro lugar. Sem chat.',
-		'hero_title'            => 'Ninguém deveria ouvir sozinho.',
-		'hero_text'             => 'Conecte seu Spotify e conheça pessoas pelo que elas realmente escutam. Em cada cartão, os artistas mais ouvidos vêm em destaque — a foto é opcional. Deu match? Vocês ganham uma playlist em comum e um jeito de se encontrar no próximo show.',
-		'hero_cta_label'        => 'Conectar meu Spotify',
+		'hero_eyebrow'          => 'Unidos pelo play',
+		'hero_title'            => 'Música em primeiro lugar.',
+		'hero_text'             => 'Sintonize com quem está na mesma frequência que você.',
+		'hero_cta_label'        => 'Montar meu perfil sonoro',
 		'hero_secondary_label'  => 'Ver como funciona',
 		'hero_stats'            => array(
 			array(
@@ -118,8 +122,8 @@ function spotinder_defaults() {
 		'how_steps'             => array(
 			array(
 				'emoji' => '🎧',
-				'title' => 'Conecte o Spotify',
-				'text'  => 'É o único jeito de entrar. Lemos só seus artistas e músicas mais ouvidos e seu perfil público — nada de e-mail ou histórico completo.',
+				'title' => 'Escolha seus artistas',
+				'text'  => 'Entre com sua conta Google e monte seu perfil com os artistas e as músicas que são a sua cara. Se quiser, ative a localização para achar gente perto.',
 			),
 			array(
 				'emoji' => '🃏',
@@ -128,7 +132,7 @@ function spotinder_defaults() {
 			),
 			array(
 				'emoji' => '⚡',
-				'title' => 'Deu som!',
+				'title' => 'Fez barulho!',
 				'text'  => 'Quando os dois curtem, rola um match com a trilha sonora de vocês tocando e uma playlist feita da interseção dos gostos.',
 			),
 			array(
@@ -162,7 +166,7 @@ function spotinder_defaults() {
 			array(
 				'emoji' => '💿',
 				'title' => 'Playlist em comum',
-				'text'  => 'No lugar do chat, uma playlist com o que vocês têm em comum. Dá para salvar direto na sua conta.',
+				'text'  => 'No lugar do chat, uma playlist com as músicas favoritas de vocês dois — o que têm em comum e o que um indica ao outro.',
 			),
 			array(
 				'emoji' => '🎟️',
@@ -177,7 +181,7 @@ function spotinder_defaults() {
 			array(
 				'emoji' => '🛡️',
 				'title' => 'Privacidade de verdade',
-				'text'  => 'Não guardamos seus tokens do Spotify, não pedimos e-mail, a foto é opcional e você apaga tudo com um clique.',
+				'text'  => 'Sem senha e sem e-mail: da sua conta Google recebemos só nome e foto pública. A foto é opcional e você apaga tudo com um clique.',
 			),
 			array(
 				'emoji' => '🚩',
@@ -188,8 +192,8 @@ function spotinder_defaults() {
 
 		// Home — eventos.
 		'events_eyebrow'        => 'Agenda',
-		'events_title'          => 'Próximos encontros para ouvir junto.',
-		'events_text'           => 'Eventos cadastrados pela nossa equipe. Marque presença e descubra quais dos seus matches também vão.',
+		'events_title'          => 'Encontros que estão por vir.',
+		'events_text'           => 'Marque presença e descubra quais dos seus matches também vão.',
 		'events_count'          => 3,
 		'events_cta_label'      => 'Ver agenda completa',
 
@@ -198,8 +202,8 @@ function spotinder_defaults() {
 		'faq_title'             => 'Antes de dar play.',
 		'faq'                   => array(
 			array(
-				'question' => 'Preciso ter Spotify Premium?',
-				'answer'   => 'Não. Qualquer conta Spotify serve para entrar. O player de trechos funciona para todos; quem tem Premium e está logado no Spotify ouve a faixa completa.',
+				'question' => 'Preciso ter conta no Spotify?',
+				'answer'   => 'Não. Você entra com sua conta Google e escolhe seus artistas e músicas favoritos numa busca. O player de trechos funciona para todos; quem tem Premium e está logado no Spotify ouve a faixa completa.',
 			),
 			array(
 				'question' => 'Por que não tem chat?',
@@ -210,16 +214,16 @@ function spotinder_defaults() {
 				'answer'   => 'Não exclusivamente. A maioria das pessoas procura amizade, companhia para shows ou gente para montar uma banda. Se rolar algo mais, ótimo — mas não é o foco.',
 			),
 			array(
-				'question' => 'O que vocês veem da minha conta Spotify?',
-				'answer'   => 'Só seus artistas e músicas mais ouvidos dos últimos meses, o nome público do seu perfil e o endereço da sua foto do Spotify (que só aparece se você escolher usá-la). Não acessamos e-mail, playlists privadas nem o que você está ouvindo agora.',
+				'question' => 'O que vocês recebem da minha conta Google?',
+				'answer'   => 'Só o identificador da conta, seu nome e o endereço da sua foto pública (que só aparece se você escolher usá-la). Não pedimos seu e-mail nem acessamos contatos, agenda ou qualquer outro dado da conta. Seus artistas e músicas é você quem escolhe.',
 			),
 			array(
 				'question' => 'Como apago minha conta?',
-				'answer'   => 'Em Perfil > Privacidade, clique em "Apagar minha conta". Removemos tudo na hora: perfil, matches, convites e dados vindos do Spotify.',
+				'answer'   => 'Em Perfil > Privacidade, clique em "Apagar minha conta". Removemos tudo na hora: perfil, artistas e músicas escolhidos, matches e convites.',
 			),
 			array(
 				'question' => 'Preciso colocar foto?',
-				'answer'   => 'Não. A foto é opcional: sem ela, seu cartão mostra suas iniciais e os artistas continuam em destaque. Se quiser, use a foto do seu perfil do Spotify ou envie uma — removemos a localização e outros metadados da imagem, e você pode trocar ou apagar quando quiser.',
+				'answer'   => 'Não. A foto é opcional: sem ela, seu cartão mostra suas iniciais e os artistas continuam em destaque. Se quiser, use a foto da sua conta Google ou envie uma — removemos a localização e outros metadados da imagem, e você pode trocar ou apagar quando quiser.',
 			),
 			array(
 				'question' => 'Vocês sabem onde eu estou?',
@@ -229,8 +233,8 @@ function spotinder_defaults() {
 
 		// Home — CTA final.
 		'final_cta_title'       => 'Seu próximo melhor amigo pode estar no mesmo refrão.',
-		'final_cta_text'        => 'Leva menos de um minuto. Foto opcional, sem formulário, sem chat.',
-		'final_cta_label'       => 'Conectar meu Spotify',
+		'final_cta_text'        => 'Leva menos de um minuto. Foto opcional, sem senha, sem chat.',
+		'final_cta_label'       => 'Montar meu perfil sonoro',
 
 		// App — intenções e tipos de convite.
 		'intentions'            => array(
@@ -300,10 +304,10 @@ function spotinder_defaults() {
 
 		// App — onboarding e consentimentos.
 		'onboarding_title'      => 'Bora montar seu perfil sonoro.',
-		'onboarding_text'       => 'Seus artistas já vieram do Spotify. Falta só dizer o que você procura e, se quiser, quais redes aparecem para seus matches.',
+		'onboarding_text'       => 'Escolha os artistas e as músicas que são a sua cara, diga o que você procura e, se quiser, quais redes aparecem para seus matches.',
 		'consent_age_label'     => 'Tenho 18 anos ou mais.',
 		'consent_terms_label'   => 'Li e aceito os Termos de Uso e a Política de Privacidade.',
-		'consent_share_label'   => 'Autorizo exibir meu nome público e meus artistas/músicas mais ouvidos para outras pessoas do app.',
+		'consent_share_label'   => 'Autorizo exibir meu nome e meus artistas e músicas favoritos para outras pessoas do app.',
 		'consent_social_label'  => 'Entendo que as redes sociais que eu cadastrar serão mostradas para quem der match comigo e que a responsabilidade pelo contato fora do app é minha.',
 
 		// App — foto de perfil.

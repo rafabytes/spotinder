@@ -16,7 +16,7 @@ add_action( 'rest_api_init', 'spotinder_register_routes' );
 function spotinder_rest_member() {
 	$user_id = get_current_user_id();
 	if ( ! $user_id || ! spotinder_is_member( $user_id ) ) {
-		return new WP_Error( 'spotinder_auth', 'Entre com o Spotify para continuar.', array( 'status' => 401 ) );
+		return new WP_Error( 'spotinder_auth', 'Entre com o Google para continuar.', array( 'status' => 401 ) );
 	}
 	if ( get_user_meta( $user_id, 'spotinder_banned', true ) ) {
 		return new WP_Error( 'spotinder_banned', 'Conta suspensa.', array( 'status' => 403 ) );
@@ -154,7 +154,7 @@ function spotinder_register_routes() {
 		)
 	);
 
-	// Escolha da origem da foto: none | spotify | upload.
+	// Escolha da origem da foto: none | google | upload.
 	register_rest_route(
 		$ns,
 		'/me/photo-source',
@@ -164,7 +164,7 @@ function spotinder_register_routes() {
 			'args'                => array(
 				'source'  => array(
 					'type'     => 'string',
-					'enum'     => array( 'none', 'spotify', 'upload' ),
+					'enum'     => array( 'none', 'google', 'upload' ),
 					'required' => true,
 				),
 				'consent' => array(
@@ -176,6 +176,38 @@ function spotinder_register_routes() {
 				$user_id = get_current_user_id();
 				$set     = spotinder_set_photo_source( $user_id, $req['source'], (bool) $req['consent'] );
 				return is_wp_error( $set ) ? $set : spotinder_member_payload( $user_id, 0, 'self' );
+			},
+		)
+	);
+
+	// Busca de artistas/músicas para o perfil (catálogo público do Spotify, token do app).
+	register_rest_route(
+		$ns,
+		'/catalog',
+		array(
+			'methods'             => 'GET',
+			'permission_callback' => 'spotinder_rest_member',
+			'args'                => array(
+				'type' => array(
+					'type'     => 'string',
+					'enum'     => array( 'artist', 'track' ),
+					'required' => true,
+				),
+				'q'    => array(
+					'type'              => 'string',
+					'required'          => true,
+					'sanitize_callback' => fn( $q ) => mb_substr( trim( sanitize_text_field( $q ) ), 0, 80 ),
+				),
+			),
+			'callback'            => function ( WP_REST_Request $req ) {
+				if ( mb_strlen( $req['q'] ) < 2 ) {
+					return array();
+				}
+				if ( ! spotinder_spotify_configured() ) {
+					return new WP_Error( 'spotinder_catalog', 'A busca está indisponível no momento.', array( 'status' => 503 ) );
+				}
+				$items = spotinder_spotify_search( $req['q'], $req['type'] );
+				return is_wp_error( $items ) ? new WP_Error( 'spotinder_catalog', 'A busca não respondeu. Tente de novo em instantes.', array( 'status' => 502 ) ) : $items;
 			},
 		)
 	);

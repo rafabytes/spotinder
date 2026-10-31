@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { api, config } from '../api';
 import Onboarding from './Onboarding';
 import { AboutFields, LocationField, PhotoField, SocialFields, hasSocials, profileToForm } from './ProfileFields';
-import { ArtistTile, ErrorBox, Loading, SpotifyAttribution, Toggle } from './ui';
+import MusicPicker, { musicFromProfile, musicReady, musicToBody } from './MusicPicker';
+import { ErrorBox, Loading, Toggle } from './ui';
 
 const TABS = [
 	['perfil', 'Perfil'],
@@ -94,6 +95,8 @@ function ProfileTab({ me, onSaved }) {
 
 	return (
 		<div className="space-y-6">
+			<MusicSection me={me} onSaved={onSaved} />
+
 			<section className="card space-y-4 p-6">
 				<h2 className="text-lg font-semibold text-white">Foto de perfil</h2>
 				<PhotoField me={me} onSaved={onSaved} />
@@ -115,25 +118,30 @@ function ProfileTab({ me, onSaved }) {
 				<ErrorBox error={state.error} />
 				<SaveBar state={state} disabled={!form.name.trim() || !form.intentions.length} />
 			</form>
-
-			<section className="card space-y-4 p-6">
-				<div className="flex flex-wrap items-center justify-between gap-3">
-					<div>
-						<h2 className="text-lg font-semibold text-white">Seus artistas mais ouvidos</h2>
-						<p className="text-sm text-white/50">Atualizado em {me.syncedAt || '—'}. Mudou de fase? Sincronize de novo.</p>
-					</div>
-					<a href={config.urls.refresh} className="btn-ghost" data-no-swup>
-						Atualizar com o Spotify
-					</a>
-				</div>
-				<div className="grid grid-cols-3 gap-1 overflow-hidden rounded-2xl sm:grid-cols-5">
-					{me.artists.slice(0, 15).map((a) => (
-						<ArtistTile key={a.id || a.name} artist={a} className="aspect-square" />
-					))}
-				</div>
-				<SpotifyAttribution />
-			</section>
 		</div>
+	);
+}
+
+function MusicSection({ me, onSaved }) {
+	const [music, setMusic] = useState(() => musicFromProfile(me));
+	const [state, save] = useSaver(onSaved);
+
+	return (
+		<form
+			className="card space-y-6 p-6"
+			onSubmit={(e) => {
+				e.preventDefault();
+				save(musicToBody(music));
+			}}
+		>
+			<div>
+				<h2 className="text-lg font-semibold text-white">Seus artistas e músicas</h2>
+				<p className="text-sm text-white/50">Atualizado em {me.syncedAt || '—'}. Mudou de fase? É só mexer na lista.</p>
+			</div>
+			<MusicPicker music={music} setMusic={setMusic} />
+			<ErrorBox error={state.error} />
+			<SaveBar state={state} disabled={!musicReady(music)} />
+		</form>
 	);
 }
 
@@ -202,9 +210,10 @@ function PrivacyTab({ me, onSaved }) {
 			<section className="card space-y-4 p-6">
 				<h2 className="text-lg font-semibold text-white">Seus dados</h2>
 				<ul className="space-y-2 text-sm text-white/65">
-					<li>• Do Spotify guardamos só ID, nome público, endereço da foto pública, artistas e músicas mais ouvidos (substituídos a cada atualização).</li>
+					<li>• Da sua conta Google guardamos só o identificador, o nome e o endereço da foto pública. Nada de e-mail.</li>
+					<li>• Artistas e músicas: só a seleção atual, na ordem que você escolheu (sem histórico).</li>
 					<li>• Foto enviada: guardada sem metadados (sem localização) e apagada na hora ao trocar, remover ou excluir a conta.</li>
-					<li>• Não guardamos tokens de acesso do Spotify.</li>
+					<li>• Não guardamos tokens de acesso do Google.</li>
 					<li>• Consentimentos aceitos em {me.consents?.terms} (versão {me.consents?.version}).</li>
 				</ul>
 				<div className="flex flex-wrap gap-2">
@@ -214,15 +223,15 @@ function PrivacyTab({ me, onSaved }) {
 					<a className="btn-ghost" href={config.urls.privacy}>
 						Política de Privacidade
 					</a>
-					<a className="btn-ghost" href="https://www.spotify.com/account/apps/" target="_blank" rel="noopener noreferrer">
-						Apps conectados no Spotify
+					<a className="btn-ghost" href="https://myaccount.google.com/connections" target="_blank" rel="noopener noreferrer">
+						Apps conectados no Google
 					</a>
 				</div>
 			</section>
 
 			<section className="card space-y-4 border-rose-400/20 p-6">
 				<h2 className="text-lg font-semibold text-white">Apagar minha conta</h2>
-				<p className="text-sm text-white/65">Remove na hora seu perfil, artistas, matches, convites, presenças e redes sociais. Não dá para desfazer. Isso também desconecta seu Spotify do app.</p>
+				<p className="text-sm text-white/65">Remove na hora seu perfil, artistas e músicas, matches, convites, presenças e redes sociais. Não dá para desfazer.</p>
 				<ErrorBox error={error} />
 				<label className="block max-w-xs">
 					<span className="label">

@@ -77,7 +77,7 @@ export function ArtistTile({ artist, className = '', showName = true, rank = nul
 			{showName && (
 				// No cartão do deck, o avatar da pessoa sobrepõe o canto inferior esquerdo do tile grande: o rótulo sobe.
 				<span className={`absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent leading-tight text-white ${large ? 'p-4 pb-12 pt-14' : 'p-2.5 pt-8'}`}>
-					{rank && <span className={`block font-semibold uppercase tracking-widest text-white/60 ${large ? 'mb-0.5 text-[11px]' : 'text-[9px]'}`}>#{rank} mais ouvido</span>}
+					{rank && <span className={`block font-semibold uppercase tracking-widest text-white/60 ${large ? 'mb-0.5 text-[11px]' : 'text-[9px]'}`}>#{rank} favorito</span>}
 					<span className={`block font-semibold ${large ? 'text-xl' : 'text-sm'}`}>{artist.name}</span>
 				</span>
 			)}

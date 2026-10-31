@@ -45,7 +45,7 @@ add_action(
 				break;
 			case 'reset_texts':
 				spotinder_seed_options( true );
-				$msg = 'Textos e opções restaurados para o padrão do tema (credenciais do Spotify mantidas).';
+				$msg = 'Textos e opções restaurados para o padrão do tema (credenciais do Google e do Spotify mantidas).';
 				break;
 			case 'seed_demo':
 				$msg = sprintf( '%d usuários de teste criados/atualizados.', spotinder_seed_demo_users() );
@@ -117,7 +117,8 @@ function spotinder_render_tools_page() {
 
 	// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery
 	$stats = array(
-		'Membros reais'           => count( get_users( array( 'meta_key' => 'spotinder_spotify_id', 'meta_compare' => 'EXISTS', 'fields' => 'ID', 'number' => -1 ) ) ) - count( get_users( array( 'meta_key' => 'spotinder_is_demo', 'fields' => 'ID', 'number' => -1 ) ) ),
+		'Membros (Google)'        => count( get_users( array( 'meta_key' => 'spotinder_google_id', 'meta_compare' => 'EXISTS', 'fields' => 'ID', 'number' => -1 ) ) ),
+		'Contas antigas (Spotify)' => count( get_users( array( 'meta_key' => 'spotinder_spotify_id', 'meta_compare' => 'EXISTS', 'fields' => 'ID', 'number' => -1 ) ) ) - count( get_users( array( 'meta_key' => 'spotinder_is_demo', 'fields' => 'ID', 'number' => -1 ) ) ),
 		'Usuários de teste'       => count( get_users( array( 'meta_key' => 'spotinder_is_demo', 'fields' => 'ID', 'number' => -1 ) ) ),
 		'Matches'                 => (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . spotinder_table( 'matches' ) ),
 		'Convites'                => (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . spotinder_table( 'invites' ) ),
@@ -147,8 +148,11 @@ function spotinder_render_tools_page() {
 			<div class="notice notice-success is-dismissible"><p><?php echo esc_html( $msg ); ?></p></div>
 		<?php endif; ?>
 
+		<?php if ( ! spotinder_google_configured() ) : ?>
+			<div class="notice notice-warning"><p>O login com Google ainda não está configurado. Preencha <strong>Client ID</strong> e <strong>Client Secret</strong> em Spotinder &gt; Configurações &gt; Login com Google. URI de redirecionamento: <code><?php echo esc_html( spotinder_redirect_uri() ); ?></code></p></div>
+		<?php endif; ?>
 		<?php if ( ! spotinder_spotify_configured() ) : ?>
-			<div class="notice notice-warning"><p>O login com Spotify ainda não está configurado. Preencha <strong>Client ID</strong> e <strong>Client Secret</strong> em Spotinder &gt; Spotify API. Redirect URI: <code><?php echo esc_html( spotinder_redirect_uri() ); ?></code></p></div>
+			<div class="notice notice-warning"><p>A busca de artistas e músicas ainda não está configurada. Preencha <strong>Client ID</strong> e <strong>Client Secret</strong> em Spotinder &gt; Configurações &gt; Catálogo do Spotify. Sem ela, os membros só conseguem adicionar artistas digitando o nome (sem foto) e não escolhem músicas.</p></div>
 		<?php endif; ?>
 
 		<h2>Visão geral</h2>

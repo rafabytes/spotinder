@@ -1,6 +1,6 @@
 # Spotinder — tema WordPress
 
-Conecta pessoas pelo gosto musical. Login exclusivo via Spotify, deck estilo swipe com os artistas mais ouvidos no lugar de fotos, match com trilha sonora e playlist em comum, sem chat (só redes sociais + convites), agenda de eventos e campanha de histórias.
+Conecta pessoas pelo gosto musical. Login exclusivo via Google, artistas e músicas favoritos escolhidos pela própria pessoa (busca no catálogo do Spotify), deck estilo swipe com os artistas em destaque no lugar de fotos, match com trilha sonora e playlist em comum, sem chat (só redes sociais + convites), agenda de eventos e campanha de histórias.
 
 **Stack:** WordPress + Parcel + TailwindCSS v4 + Swup + React 19. Os conteúdos editáveis usam **ACF PRO**, com campos registrados em PHP.
 
@@ -14,14 +14,24 @@ Conecta pessoas pelo gosto musical. Login exclusivo via Spotify, deck estilo swi
    - páginas (Início, Descobrir, Matches, Perfil, Privacidade, Termos, Segurança);
    - 3 histórias da campanha, 5 eventos de exemplo, menus e 14 usuários de teste.
 3. Em **Configurações > Links permanentes**, use "Nome do post".
-4. Configure o Spotify em **Spotinder > Configurações > Spotify API** (passo a passo abaixo).
+4. Configure o login em **Spotinder > Configurações > Login com Google** e a busca de artistas em **Catálogo do Spotify** (passo a passo abaixo).
 
-### Spotify
+### Login com Google
+
+O Spotify não libera o login de usuários (*extended quota*) para o propósito do site, então as contas são criadas pelo Google e cada pessoa escolhe os próprios artistas e músicas.
+
+1. No [Google Cloud Console](https://console.cloud.google.com/apis/credentials), configure a **Tela de consentimento OAuth** (Externo; escopos `openid` e `userinfo.profile`, **sem e-mail**) e publique o app.
+2. Crie um **ID do cliente OAuth** do tipo *Aplicativo da Web* e cadastre a URI de redirecionamento mostrada no painel: `https://SEU-DOMINIO/?spotinder_auth=callback`.
+   - O Google só aceita **HTTPS** ou `http://localhost`. Em `http://spotinder.local`, preencha "URI de redirecionamento (sobrescrever)" com `http://localhost/...?spotinder_auth=callback`, cadastre essa URI também no Google e o tema repassa o retorno para o domínio do site.
+3. Contas antigas, criadas pelo login do Spotify, continuam no banco mas não conseguem mais entrar. Elas aparecem em Ferramentas como "Contas antigas (Spotify)" e são apagadas pela retenção por inatividade.
+
+### Catálogo do Spotify
+
+A busca de artistas e músicas, as fotos dos cartões do destaque e os perfis de teste usam só o token do próprio app (*client credentials*): ninguém conecta a conta do Spotify, então não há limite de usuários liberados.
 
 1. Crie um app em <https://developer.spotify.com/dashboard> e marque **Web API**.
-2. Cadastre a Redirect URI mostrada no painel: `https://SEU-DOMINIO/?spotinder_auth=callback`.
-   - O Spotify só aceita **HTTPS** ou loopback (`http://127.0.0.1`). `http://spotinder.local` **não funciona**. Para desenvolver localmente, use HTTPS no vhost do XAMPP ou acesse o site por `http://127.0.0.1/...`, com `home`/`siteurl` ajustados.
-3. Em modo de desenvolvimento, adicione as contas de teste em *User Management*. O limite é 5, e o dono do app precisa de Premium.
+2. Copie Client ID e Client Secret para **Catálogo do Spotify**. O painel do Spotify exige uma Redirect URI, mas ela não é usada.
+3. Sem essas credenciais, o cadastro continua funcionando: os membros adicionam artistas só pelo nome (sem foto) e não escolhem músicas.
 4. Opcional: em **Spotinder > Ferramentas**, clique em "Completar com dados do Spotify". Os perfis de teste ganham fotos de artistas e IDs reais, e o player oficial passa a tocar as faixas.
 
 ## Desenvolvimento
@@ -101,9 +111,10 @@ inc/
   acf-fields.php      páginas de opções e grupos de campos
   post-types.php      spot_event (+ spot_event_type) e spot_story
   db.php              tabelas: swipes, matches, blocks, reports, rsvps, invites
-  spotify-client.php  OAuth, /me/top/*, criação de playlist (endpoints 2026 com fallback), busca
-  auth.php            ?spotinder_auth=login|playlist|callback|logout (sem guardar tokens)
-  members.php         perfil, consentimentos, exportação e exclusão
+  google-client.php   login com Google (OpenID Connect, só openid profile)
+  spotify-client.php  catálogo público (token do app): busca, artista/faixa por ID
+  auth.php            ?spotinder_auth=login|callback|logout (sem guardar tokens)
+  members.php         perfil, artistas/músicas escolhidos, consentimentos, exportação e exclusão
   matching.php        compatibilidade, deck, swipe, match, trilha sonora, playlist em comum
   events.php          presenças, convites, Google Agenda e .ics
   rest.php            /wp-json/spotinder/v1/*
@@ -114,7 +125,7 @@ src/js/
   app.js              Swup (containers #swup e #site-header) + montagem das ilhas React
   islands.js          <div data-island="Deck" data-props='{}'> → React
   components/         Deck, SwipeCard, MatchModal, Matches, MatchDetail, Invites, ReportDialog,
-                      Profile, Onboarding, EventRsvp, MatchBadge, SpotifyEmbed
+                      Profile, Onboarding, MusicPicker, EventRsvp, MatchBadge, SpotifyEmbed
 content/              HTML inicial de Privacidade, Termos e Segurança
 ```
 
