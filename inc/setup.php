@@ -144,6 +144,10 @@ function spotinder_js_config() {
 		'intentions'  => array_values( (array) spotinder_opt( 'intentions' ) ),
 		'inviteTypes' => array_values( (array) spotinder_opt( 'invite_types' ) ),
 		'safetyTips'  => wp_list_pluck( (array) spotinder_opt( 'safety_tips' ), 'text' ),
+		'google'      => array(
+			'clientId' => $user_id || ! spotinder_google_configured() ? '' : (string) spotinder_opt( 'google_client_id' ),
+			'scope'    => SPOTINDER_GOOGLE_SCOPE,
+		),
 		'music'       => array(
 			'catalog'    => spotinder_spotify_configured(),
 			'minArtists' => SPOTINDER_MIN_ARTISTS,

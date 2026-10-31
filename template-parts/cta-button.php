@@ -18,8 +18,12 @@ $spotinder_class  = $args['class'] ?? 'btn-primary btn-lg';
 		<span><?php esc_html_e( 'Continuar descobrindo', 'spotinder' ); ?></span>
 	</a>
 <?php else : ?>
-	<a href="<?php echo esc_url( spotinder_login_url() ); ?>" class="<?php echo esc_attr( $spotinder_class ); ?>" data-no-swup>
-		<?php echo spotinder_icon( 'google', 'size-5' ); // phpcs:ignore ?>
-		<span><?php echo esc_html( $args['label'] ?? spotinder_opt( 'login_label' ) ); ?></span>
-	</a>
+	<?php
+	echo spotinder_google_button( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		array(
+			'label' => $args['label'] ?? spotinder_opt( 'login_label' ),
+			'size'  => 'lg',
+		)
+	);
+	?>
 <?php endif; ?>

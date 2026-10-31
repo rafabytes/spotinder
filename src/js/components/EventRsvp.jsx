@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api, config } from '../api';
-import { Avatar, ErrorBox, Spinner } from './ui';
+import { Avatar, ErrorBox, GoogleButton, Spinner } from './ui';
 
 /**
  * Presença no evento + quais matches também vão.
@@ -49,9 +49,7 @@ export default function EventRsvp({ eventId }) {
 					</button>
 				</div>
 			) : (
-				<a href={config.urls.login} className="btn-primary w-full justify-center" data-no-swup>
-					Entre para marcar presença
-				</a>
+				<GoogleButton label="Entre com o Google para marcar presença" className="w-full" />
 			)}
 
 			<ErrorBox error={error} />

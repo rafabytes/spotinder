@@ -21,8 +21,9 @@ Conecta pessoas pelo gosto musical. Login exclusivo via Google, artistas e músi
 O Spotify não libera o login de usuários (*extended quota*) para o propósito do site, então as contas são criadas pelo Google e cada pessoa escolhe os próprios artistas e músicas.
 
 1. No [Google Cloud Console](https://console.cloud.google.com/apis/credentials), configure a **Tela de consentimento OAuth** (Externo; escopos `openid` e `userinfo.profile`, **sem e-mail**) e publique o app.
-2. Crie um **ID do cliente OAuth** do tipo *Aplicativo da Web* e cadastre a URI de redirecionamento mostrada no painel: `https://SEU-DOMINIO/?spotinder_auth=callback`.
-   - O Google só aceita **HTTPS** ou `http://localhost`. Em `http://spotinder.local`, preencha "URI de redirecionamento (sobrescrever)" com `http://localhost/...?spotinder_auth=callback`, cadastre essa URI também no Google e o tema repassa o retorno para o domínio do site.
+2. Crie um **ID do cliente OAuth** do tipo *Aplicativo da Web* e cadastre em **Origens JavaScript autorizadas** a origem do site (ex.: `https://rafabytes.com`). Não é preciso URI de redirecionamento.
+   - O login abre num popup do Google (Google Identity Services, `src/js/google-login.js`) e o código volta por `postMessage`. O retorno por redirecionamento traz `?iss=https://accounts.google.com` na URL, que o ModSecurity da hospedagem bloqueia com 406.
+   - O Google só aceita origens em **HTTPS** ou `http://localhost`. Para testar localmente, acesse o site por localhost.
 3. Contas antigas, criadas pelo login do Spotify, continuam no banco mas não conseguem mais entrar. Elas aparecem em Ferramentas como "Contas antigas (Spotify)" e são apagadas pela retenção por inatividade.
 
 ### Catálogo do Spotify
@@ -111,9 +112,9 @@ inc/
   acf-fields.php      páginas de opções e grupos de campos
   post-types.php      spot_event (+ spot_event_type) e spot_story
   db.php              tabelas: swipes, matches, blocks, reports, rsvps, invites
-  google-client.php   login com Google (OpenID Connect, só openid profile)
+  google-client.php   troca do código do popup do Google pelo id_token (só openid profile)
   spotify-client.php  catálogo público (token do app): busca, artista/faixa por ID
-  auth.php            ?spotinder_auth=login|callback|logout (sem guardar tokens)
+  auth.php            página ?spotinder_auth=login, logout e POST /auth/google (sem guardar tokens)
   members.php         perfil, artistas/músicas escolhidos, consentimentos, exportação e exclusão
   matching.php        compatibilidade, deck, swipe, match, trilha sonora, playlist em comum
   events.php          presenças, convites, Google Agenda e .ics

@@ -144,7 +144,7 @@ function spotinder_register_acf() {
 		);
 	};
 
-	$redirect_uri = esc_html( spotinder_redirect_uri() );
+	$js_origin = esc_html( untrailingslashit( preg_replace( '#^(https?://[^/]+).*$#', '$1', home_url() ) ) );
 
 	// Geral.
 	acf_add_local_field_group(
@@ -199,21 +199,12 @@ function spotinder_register_acf() {
 					'Como configurar',
 					'message',
 					array(
-						'message'  => "1. No <a href=\"https://console.cloud.google.com/apis/credentials\" target=\"_blank\">Google Cloud Console</a>, configure a <em>Tela de consentimento OAuth</em> (tipo Externo; escopos <code>openid</code> e <code>.../auth/userinfo.profile</code> — não peça e-mail) e publique o app.<br>2. Em <em>Credenciais &gt; Criar credenciais &gt; ID do cliente OAuth</em>, escolha <em>Aplicativo da Web</em> e cadastre em <em>URIs de redirecionamento autorizados</em> exatamente:<br><code style=\"user-select:all\">{$redirect_uri}</code><br>3. O Google só aceita URIs em <strong>HTTPS</strong> ou em <code>http://localhost</code>. Em ambiente local com domínio <code>http://*.local</code>, preencha o campo \"URI de redirecionamento (sobrescrever)\" abaixo com o endereço do mesmo site via localhost (ex.: <code>http://localhost/pasta-do-site/?spotinder_auth=callback</code>), cadastre esse endereço também no Google e o tema repassa o retorno para o domínio do site. Em produção (HTTPS), deixe o campo vazio.<br>4. Escopos pedidos: <code>openid profile</code> (ID da conta, nome e foto pública). Nenhum token é armazenado.",
+						'message'  => "1. No <a href=\"https://console.cloud.google.com/apis/credentials\" target=\"_blank\">Google Cloud Console</a>, configure a <em>Tela de consentimento OAuth</em> (tipo Externo; escopos <code>openid</code> e <code>.../auth/userinfo.profile</code> — não peça e-mail) e publique o app.<br>2. Em <em>Credenciais &gt; ID do cliente OAuth</em> (tipo <em>Aplicativo da Web</em>), cadastre em <em>Origens JavaScript autorizadas</em> exatamente:<br><code style=\"user-select:all\">{$js_origin}</code><br>O login abre num popup do Google, então <strong>não é preciso URI de redirecionamento</strong>. O Google só aceita origens em HTTPS ou <code>http://localhost</code>: para testar localmente, acesse o site por localhost e cadastre essa origem também.<br>3. Escopos pedidos: <code>openid profile</code> (ID da conta, nome e foto pública). Nenhum token é armazenado.",
 						'esc_html' => 0,
 					)
 				),
 				spotinder_acf_field( 'google_client_id', 'Client ID' ),
 				spotinder_acf_field( 'google_client_secret', 'Client Secret', 'password' ),
-				spotinder_acf_field(
-					'google_redirect_uri',
-					'URI de redirecionamento (sobrescrever)',
-					'url',
-					array(
-						'placeholder'  => spotinder_default_redirect_uri(),
-						'instructions' => 'Opcional. Vazio = usa a URI padrão do site (' . esc_html( spotinder_default_redirect_uri() ) . '). Use só em desenvolvimento local.',
-					)
-				),
 
 				spotinder_acf_tab( 'spotify', 'Catálogo do Spotify' ),
 				spotinder_acf_field(
@@ -243,7 +234,7 @@ function spotinder_register_acf() {
 				spotinder_acf_field( 'demo_like_chance', 'Chance de curtir de volta (%)', 'number', array( 'min' => 0, 'max' => 100 ) ),
 
 				spotinder_acf_tab( 'header', 'Cabeçalho' ),
-				spotinder_acf_field( 'login_label', 'Texto do botão de login' ),
+				spotinder_acf_field( 'login_label', 'Texto do botão de login', 'text', array( 'instructions' => 'Aparece no botão do Google, ao lado do logo: mantenha "Google" no texto (regras de marca do Google).' ) ),
 				spotinder_acf_field( 'nav_cta_label', 'Texto do botão do menu (logado)' ),
 			),
 		)
@@ -266,7 +257,7 @@ function spotinder_register_acf() {
 				spotinder_acf_field( 'hero_eyebrow', 'Chamada acima do título' ),
 				spotinder_acf_field( 'hero_title', 'Título' ),
 				spotinder_acf_field( 'hero_text', 'Texto', 'textarea' ),
-				spotinder_acf_field( 'hero_cta_label', 'Botão principal' ),
+				spotinder_acf_field( 'hero_cta_label', 'Botão principal', 'text', array( 'instructions' => 'Aparece no botão do Google, ao lado do logo: mantenha "Google" no texto (regras de marca do Google).' ) ),
 				spotinder_acf_field( 'hero_secondary_label', 'Botão secundário' ),
 				spotinder_acf_repeater(
 					'hero_stats',
@@ -346,7 +337,7 @@ function spotinder_register_acf() {
 				spotinder_acf_tab( 'final', 'Chamada final' ),
 				spotinder_acf_field( 'final_cta_title', 'Título' ),
 				spotinder_acf_field( 'final_cta_text', 'Texto', 'textarea' ),
-				spotinder_acf_field( 'final_cta_label', 'Texto do botão' ),
+				spotinder_acf_field( 'final_cta_label', 'Texto do botão', 'text', array( 'instructions' => 'Aparece no botão do Google, ao lado do logo: mantenha "Google" no texto (regras de marca do Google).' ) ),
 			),
 		)
 	);

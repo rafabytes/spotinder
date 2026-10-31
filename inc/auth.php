@@ -1,11 +1,12 @@
 <?php
 /**
- * Login exclusivo via Google (OpenID Connect).
+ * Login exclusivo via Google (popup do Google Identity Services).
  *
  * Rotas (query var spotinder_auth):
- *  - login     → pede apenas "openid profile"
- *  - callback  → Redirect URI cadastrada no Google Cloud
+ *  - login   → página com o botão do Google (destino dos links quando o JS ainda não carregou)
  *  - logout
+ *
+ * O código do popup chega por POST em /wp-json/spotinder/v1/auth/google.
  *
  * @package Spotinder
  */
@@ -36,16 +37,18 @@ function spotinder_handle_auth() {
 	switch ( $action ) {
 		case 'login':
 			$redirect = isset( $_GET['redirect_to'] ) ? esc_url_raw( wp_unslash( $_GET['redirect_to'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			if ( is_user_logged_in() && spotinder_is_member() && ! $redirect ) {
-				spotinder_redirect( spotinder_page_url( 'discover' ) );
+			if ( is_user_logged_in() && spotinder_is_member() ) {
+				spotinder_redirect( $redirect ? wp_validate_redirect( $redirect, spotinder_page_url( 'discover' ) ) : spotinder_page_url( 'discover' ) );
 			}
-			spotinder_start_oauth( array( 'redirect' => $redirect ) );
-			break;
-
-		case 'callback':
-			spotinder_forward_foreign_callback();
-			spotinder_oauth_callback();
-			break;
+			if ( ! spotinder_google_configured() ) {
+				spotinder_redirect( home_url( '/' ), 'not_configured' );
+			}
+			add_filter( 'wp_robots', 'wp_robots_no_robots' );
+			add_filter( 'pre_get_document_title', fn() => sprintf( '%s · %s', __( 'Entrar', 'spotinder' ), spotinder_brand() ) );
+			get_header();
+			get_template_part( 'template-parts/login-box', null, array( 'redirect' => $redirect ) );
+			get_footer();
+			exit;
 
 		case 'logout':
 			if ( isset( $_GET['_wpnonce'] ) && wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'spotinder_logout' ) ) {
@@ -53,6 +56,10 @@ function spotinder_handle_auth() {
 			}
 			spotinder_redirect( home_url( '/' ) );
 			break;
+
+		default:
+			// Ex.: retorno antigo do login por redirecionamento (?spotinder_auth=callback).
+			spotinder_redirect( home_url( '/' ) );
 	}
 }
 
@@ -70,127 +77,71 @@ function spotinder_redirect( $url, $notice = '' ) {
 	exit;
 }
 
+add_action(
+	'rest_api_init',
+	function () {
+		register_rest_route(
+			'spotinder/v1',
+			'/auth/google',
+			array(
+				'methods'             => 'POST',
+				'permission_callback' => '__return_true',
+				'args'                => array(
+					'code'     => array(
+						'type'     => 'string',
+						'required' => true,
+					),
+					'redirect' => array(
+						'type'    => 'string',
+						'default' => '',
+					),
+				),
+				'callback'            => 'spotinder_rest_google_login',
+			)
+		);
+	}
+);
+
 /**
- * Inicia o OAuth com estado assinado e vinculado ao navegador.
+ * Recebe o código do popup, cria/atualiza o membro e autentica.
  *
- * @param array $payload Dados a recuperar no callback.
+ * Proteção contra CSRF de login, como recomenda o Google para o modo popup: o
+ * cabeçalho X-Requested-With só pode ser enviado por JavaScript da própria origem
+ * (outra origem dispararia um preflight de CORS, que o WordPress não libera).
+ *
+ * @param WP_REST_Request $req Requisição.
+ * @return array|WP_Error {redirect}
  */
-function spotinder_start_oauth( $payload ) {
+function spotinder_rest_google_login( WP_REST_Request $req ) {
+	nocache_headers();
+
+	if ( 'XmlHttpRequest' !== $req->get_header( 'X-Requested-With' ) ) {
+		return new WP_Error( 'spotinder_auth', 'Requisição inválida.', array( 'status' => 400 ) );
+	}
 	if ( ! spotinder_google_configured() ) {
-		spotinder_redirect( home_url( '/' ), 'not_configured' );
+		return new WP_Error( 'spotinder_auth', spotinder_notices()['not_configured'][1], array( 'status' => 503 ) );
 	}
 
-	$state   = wp_generate_password( 32, false );
-	$browser = wp_generate_password( 32, false );
-
-	$payload['browser'] = wp_hash( $browser );
-	$payload['nonce']   = wp_generate_password( 32, false );
-	set_transient( 'spotinder_state_' . $state, $payload, 10 * MINUTE_IN_SECONDS );
-
-	setcookie(
-		'spotinder_oauth',
-		$browser,
-		array(
-			'expires'  => time() + 10 * MINUTE_IN_SECONDS,
-			'path'     => COOKIEPATH ? COOKIEPATH : '/',
-			'secure'   => is_ssl(),
-			'httponly' => true,
-			'samesite' => 'Lax',
-		)
-	);
-
-	wp_redirect( spotinder_google_authorize_url( $state, $payload['nonce'] ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
-	exit;
-}
-
-/**
- * Lê um parâmetro da query string original. Necessário porque o WordPress remove
- * $_GET['error'] em WP::parse_request() — e é por "error" que o Google avisa cancelamentos.
- *
- * @param string $key Parâmetro.
- */
-function spotinder_raw_query_arg( $key ) {
-	parse_str( isset( $_SERVER['QUERY_STRING'] ) ? (string) wp_unslash( $_SERVER['QUERY_STRING'] ) : '', $query ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-	return isset( $query[ $key ] ) && is_string( $query[ $key ] ) ? sanitize_text_field( $query[ $key ] ) : '';
-}
-
-/**
- * Callback que chegou por outro host (ex.: http://localhost/... em desenvolvimento):
- * os cookies de sessão e do OAuth pertencem ao domínio do site, então repassa
- * code/state/error para lá. O destino é sempre o próprio home_url().
- */
-function spotinder_forward_foreign_callback() {
-	$home_host    = strtolower( (string) wp_parse_url( home_url(), PHP_URL_HOST ) );
-	$request_host = isset( $_SERVER['HTTP_HOST'] ) ? strtolower( preg_replace( '/:\d+$/', '', sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) ) ) : '';
-
-	if ( ! $request_host || ! $home_host || $request_host === $home_host ) {
-		return;
-	}
-
-	$args = array( 'spotinder_auth' => 'callback' );
-	foreach ( array( 'code', 'state', 'error' ) as $key ) {
-		$value = spotinder_raw_query_arg( $key );
-		if ( '' !== $value ) {
-			$args[ $key ] = rawurlencode( $value );
-		}
-	}
-
-	wp_safe_redirect( add_query_arg( $args, home_url( '/' ) ) );
-	exit;
-}
-
-/**
- * Callback do Google.
- */
-function spotinder_oauth_callback() {
-	// Validado pelo state + cookie (não há nonce do WP: a requisição vem do Google).
-	$state = spotinder_raw_query_arg( 'state' );
-	$code  = spotinder_raw_query_arg( 'code' );
-	$error = sanitize_key( spotinder_raw_query_arg( 'error' ) );
-
-	$payload = $state ? get_transient( 'spotinder_state_' . $state ) : false;
-	delete_transient( 'spotinder_state_' . $state );
-
-	$browser = isset( $_COOKIE['spotinder_oauth'] ) ? sanitize_text_field( wp_unslash( $_COOKIE['spotinder_oauth'] ) ) : '';
-	setcookie( 'spotinder_oauth', '', time() - 3600, COOKIEPATH ? COOKIEPATH : '/' );
-
-	if ( ! $payload || ! $browser || ! hash_equals( $payload['browser'], wp_hash( $browser ) ) ) {
-		spotinder_redirect( home_url( '/' ), 'invalid_state' );
-	}
-
-	if ( $error || ! $code ) {
-		spotinder_redirect( home_url( '/' ), 'access_denied' === $error ? 'cancelled' : 'login_error' );
-	}
-
-	$account = spotinder_google_exchange_code( $code, (string) ( $payload['nonce'] ?? '' ) );
+	$account = spotinder_google_exchange_code( (string) $req['code'] );
 	if ( is_wp_error( $account ) ) {
-		spotinder_redirect( home_url( '/' ), 'login_error' );
+		return new WP_Error( 'spotinder_auth', spotinder_notices()['login_error'][1], array( 'status' => 502 ) );
 	}
 
-	spotinder_finish_login( $account, $payload['redirect'] ?? '' );
-}
-
-/**
- * Conclui o login: cria/atualiza o membro e autentica.
- *
- * @param array  $account  Conta Google (spotinder_google_exchange_code()).
- * @param string $redirect Destino solicitado.
- */
-function spotinder_finish_login( $account, $redirect ) {
 	$user_id = spotinder_upsert_member( $account );
 	if ( is_wp_error( $user_id ) ) {
-		spotinder_redirect( home_url( '/' ), 'spotinder_banned' === $user_id->get_error_code() ? 'banned' : 'login_error' );
+		$key = 'spotinder_banned' === $user_id->get_error_code() ? 'banned' : 'login_error';
+		return new WP_Error( 'spotinder_auth', spotinder_notices()[ $key ][1], array( 'status' => 403 ) );
 	}
 
 	wp_set_current_user( $user_id );
 	wp_set_auth_cookie( $user_id, true, is_ssl() );
 
 	if ( ! get_user_meta( $user_id, 'spotinder_onboarded', true ) || ! spotinder_has_consents( $user_id ) ) {
-		spotinder_redirect( spotinder_page_url( 'profile' ) );
+		return array( 'redirect' => spotinder_page_url( 'profile' ) );
 	}
 
-	$target = $redirect ? wp_validate_redirect( $redirect, spotinder_page_url( 'discover' ) ) : spotinder_page_url( 'discover' );
-	spotinder_redirect( $target );
+	$redirect = (string) $req['redirect'];
+	return array( 'redirect' => $redirect ? wp_validate_redirect( $redirect, spotinder_page_url( 'discover' ) ) : spotinder_page_url( 'discover' ) );
 }
 
 /**
@@ -199,8 +150,6 @@ function spotinder_finish_login( $account, $redirect ) {
 function spotinder_notices() {
 	return array(
 		'not_configured' => array( 'error', 'O login com Google ainda não foi configurado pela equipe.' ),
-		'invalid_state'  => array( 'error', 'A sessão de login expirou. Tente de novo.' ),
-		'cancelled'      => array( 'info', 'Tudo bem! Você cancelou a entrada com o Google.' ),
 		'login_error'    => array( 'error', 'O Google não respondeu como esperado. Tente novamente em instantes.' ),
 		'banned'         => array( 'error', 'Esta conta foi suspensa por violar os Termos de Uso.' ),
 		'deleted'        => array( 'success', 'Sua conta e todos os seus dados foram apagados.' ),

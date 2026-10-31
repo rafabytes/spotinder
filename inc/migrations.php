@@ -160,7 +160,7 @@ function spotinder_migrate_legal_pages( &$review ) {
 		'privacy' => array(
 			'file'    => 'privacidade',
 			'title'   => 'Política de Privacidade',
-			'content' => array( 'be64b80bce1ab7eb3c4397b5c78c75c9', 'ef3404834daa268ece1f71243016d033', 'b2dff328d22c155c141a2c604fec3b3a' ),
+			'content' => array( 'be64b80bce1ab7eb3c4397b5c78c75c9', 'ef3404834daa268ece1f71243016d033', 'b2dff328d22c155c141a2c604fec3b3a', 'eed9124a5960a00284a64edf0b44995a' ),
 			'summary' => array( '9ad1793a5f4d354a44787c643518ad6a', '7ebee35379935c8bddb26c7de362e1d4', 'caa32f2ec04ad5978ddf0ac55c7dfb41' ),
 		),
 		'terms'   => array(
@@ -265,7 +265,7 @@ function spotinder_migration_5_texts() {
 	return array(
 		'options' => array(
 			'share_description'   => array( 'Conecte seu Spotify e conheça pessoas pelo que elas realmente escutam. Artistas em primeiro lugar, sem chat: amizades, bandas e companhia para shows.', $d['share_description'] ),
-			'login_label'         => array( 'Entrar com Spotify', $d['login_label'] ),
+			'login_label'         => array( array( 'Entrar com Spotify', 'Entrar com Google' ), $d['login_label'] ),
 			'hero_eyebrow'        => array( array( 'Música em primeiro lugar. Sem chat.', 'Sem fotos. Sem chat. Só música.' ), $d['hero_eyebrow'] ),
 			'hero_title'          => array( 'Ninguém deveria ouvir sozinho.', $d['hero_title'] ),
 			'hero_text'           => array(
@@ -275,11 +275,11 @@ function spotinder_migration_5_texts() {
 				),
 				$d['hero_text'],
 			),
-			'hero_cta_label'      => array( 'Conectar meu Spotify', $d['hero_cta_label'] ),
+			'hero_cta_label'      => array( array( 'Conectar meu Spotify', 'Montar meu perfil sonoro' ), $d['hero_cta_label'] ),
 			'events_title'        => array( 'Próximos encontros para ouvir junto.', $d['events_title'] ),
 			'events_text'         => array( 'Eventos cadastrados pela nossa equipe. Marque presença e descubra quais dos seus matches também vão.', $d['events_text'] ),
 			'final_cta_text'      => array( array( 'Leva menos de um minuto. Foto opcional, sem formulário, sem chat.', 'Leva menos de um minuto. Sem foto, sem formulário, sem chat.' ), $d['final_cta_text'] ),
-			'final_cta_label'     => array( 'Conectar meu Spotify', $d['final_cta_label'] ),
+			'final_cta_label'     => array( array( 'Conectar meu Spotify', 'Montar meu perfil sonoro' ), $d['final_cta_label'] ),
 			'onboarding_text'     => array( 'Seus artistas já vieram do Spotify. Falta só dizer o que você procura e, se quiser, quais redes aparecem para seus matches.', $d['onboarding_text'] ),
 			'consent_share_label' => array( 'Autorizo exibir meu nome público e meus artistas/músicas mais ouvidos para outras pessoas do app.', $d['consent_share_label'] ),
 		),

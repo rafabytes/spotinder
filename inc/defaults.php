@@ -36,7 +36,6 @@ function spotinder_defaults() {
 		// Login com Google.
 		'google_client_id'      => '',
 		'google_client_secret'  => '',
-		'google_redirect_uri'   => '',
 
 		// Catálogo do Spotify (busca de artistas e músicas).
 		'spotify_client_id'     => '',
@@ -55,14 +54,14 @@ function spotinder_defaults() {
 		'policy_version'        => '2026-10-31',
 
 		// Header.
-		'login_label'           => 'Entrar com Google',
+		'login_label'           => 'Entrar com o Google',
 		'nav_cta_label'         => 'Começar a ouvir junto',
 
 		// Home — hero.
 		'hero_eyebrow'          => 'Unidos pelo play',
 		'hero_title'            => 'Música em primeiro lugar.',
 		'hero_text'             => 'Sintonize com quem está na mesma frequência que você.',
-		'hero_cta_label'        => 'Montar meu perfil sonoro',
+		'hero_cta_label'        => 'Continuar com o Google',
 		'hero_secondary_label'  => 'Ver como funciona',
 		'hero_stats'            => array(
 			array(
@@ -234,7 +233,7 @@ function spotinder_defaults() {
 		// Home — CTA final.
 		'final_cta_title'       => 'Seu próximo melhor amigo pode estar no mesmo refrão.',
 		'final_cta_text'        => 'Leva menos de um minuto. Foto opcional, sem senha, sem chat.',
-		'final_cta_label'       => 'Montar meu perfil sonoro',
+		'final_cta_label'       => 'Continuar com o Google',
 
 		// App — intenções e tipos de convite.
 		'intentions'            => array(

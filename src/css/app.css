@@ -99,6 +99,39 @@
 		@apply grid size-10 place-items-center rounded-full border border-white/10 bg-white/5 text-white/80 transition hover:bg-white/10;
 	}
 
+	/* Botão "Entrar com o Google" no padrão de marca do Google (tema claro). */
+	.gsi-btn {
+		@apply inline-flex h-10 shrink-0 cursor-pointer items-center justify-center gap-2.5 whitespace-nowrap rounded-full border px-3 text-sm font-medium transition;
+		background: #fff;
+		border-color: #747775;
+		color: #1f1f1f;
+		font-family: Roboto, Arial, sans-serif;
+		letter-spacing: 0.25px;
+	}
+
+	.gsi-btn:hover {
+		background: #f2f2f2;
+		box-shadow:
+			0 1px 2px rgb(60 64 67 / 0.3),
+			0 1px 3px 1px rgb(60 64 67 / 0.15);
+	}
+
+	.gsi-btn:focus-visible {
+		@apply outline-none ring-2 ring-highlight ring-offset-2 ring-offset-ink;
+	}
+
+	.gsi-btn-lg {
+		@apply h-12 px-5 text-base;
+	}
+
+	.gsi-btn-logo {
+		@apply size-5 shrink-0;
+	}
+
+	.gsi-btn.is-busy {
+		@apply pointer-events-none opacity-60;
+	}
+
 	.chip {
 		@apply inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 text-sm text-white/80 transition hover:border-white/25 hover:text-white;
 	}

@@ -5,11 +5,12 @@ import SwupPreloadPlugin from '@swup/preload-plugin';
 import SwupA11yPlugin from '@swup/a11y-plugin';
 
 import { mountIslands, unmountIslands } from './islands';
+import { initGoogleLogin } from './google-login';
 import { refreshLocationQuietly } from './location';
 import { initUi } from './ui';
 
 /**
- * Links que precisam de navegação completa (OAuth, admin, downloads).
+ * Links que precisam de navegação completa (login, admin, downloads).
  */
 function shouldIgnore(url, el) {
 	if (el?.closest('[data-no-swup]')) return true;
@@ -41,9 +42,11 @@ swup.hooks.before('content:replace', unmountIslands);
 swup.hooks.on('page:view', () => {
 	mountIslands();
 	initUi();
+	initGoogleLogin();
 	refreshLocationQuietly();
 });
 
 mountIslands();
 initUi();
+initGoogleLogin();
 refreshLocationQuietly();

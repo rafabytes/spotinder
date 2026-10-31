@@ -65,11 +65,7 @@ $spotinder_logo   = spotinder_opt( 'logo' );
 			<?php elseif ( is_user_logged_in() ) : ?>
 				<a href="<?php echo esc_url( admin_url() ); ?>" class="btn-ghost" data-no-swup><?php esc_html_e( 'Painel', 'spotinder' ); ?></a>
 			<?php else : ?>
-				<a href="<?php echo esc_url( spotinder_login_url() ); ?>" class="btn-primary" data-no-swup>
-					<?php echo spotinder_icon( 'google', 'size-5' ); // phpcs:ignore ?>
-					<span class="hidden sm:inline"><?php echo esc_html( spotinder_opt( 'login_label' ) ); ?></span>
-					<span class="sm:hidden"><?php esc_html_e( 'Entrar', 'spotinder' ); ?></span>
-				</a>
+				<?php echo spotinder_google_button( array( 'short' => __( 'Entrar', 'spotinder' ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 			<?php endif; ?>
 
 			<button type="button" class="btn-icon md:hidden" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu" aria-label="<?php esc_attr_e( 'Abrir menu', 'spotinder' ); ?>">

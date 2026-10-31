@@ -26,11 +26,12 @@ function buildUrl(path, query) {
  * Chamada à API do tema.
  *
  * @param {string} path   Ex.: 'deck', 'matches/12'.
- * @param {object} opts   { method, body, query }
+ * @param {object} opts   { method, body, query, headers }
  */
-export async function api(path, { method = 'GET', body, query } = {}) {
+export async function api(path, { method = 'GET', body, query, headers: extra } = {}) {
 	const isForm = body instanceof FormData;
-	const headers = { 'X-WP-Nonce': config.nonce };
+	// Visitantes não mandam nonce: um X-WP-Nonce vazio faz o WordPress recusar a requisição (403).
+	const headers = { ...(config.nonce ? { 'X-WP-Nonce': config.nonce } : {}), ...extra };
 	// Em uploads o navegador define o Content-Type (multipart com boundary).
 	if (!isForm) headers['Content-Type'] = 'application/json';
 

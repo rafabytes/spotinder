@@ -149,7 +149,7 @@ function spotinder_render_tools_page() {
 		<?php endif; ?>
 
 		<?php if ( ! spotinder_google_configured() ) : ?>
-			<div class="notice notice-warning"><p>O login com Google ainda não está configurado. Preencha <strong>Client ID</strong> e <strong>Client Secret</strong> em Spotinder &gt; Configurações &gt; Login com Google. URI de redirecionamento: <code><?php echo esc_html( spotinder_redirect_uri() ); ?></code></p></div>
+			<div class="notice notice-warning"><p>O login com Google ainda não está configurado. Preencha <strong>Client ID</strong> e <strong>Client Secret</strong> em Spotinder &gt; Configurações &gt; Login com Google.</p></div>
 		<?php endif; ?>
 		<?php if ( ! spotinder_spotify_configured() ) : ?>
 			<div class="notice notice-warning"><p>A busca de artistas e músicas ainda não está configurada. Preencha <strong>Client ID</strong> e <strong>Client Secret</strong> em Spotinder &gt; Configurações &gt; Catálogo do Spotify. Sem ela, os membros só conseguem adicionar artistas digitando o nome (sem foto) e não escolhem músicas.</p></div>

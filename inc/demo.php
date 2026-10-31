@@ -164,7 +164,7 @@ function spotinder_seed_options( $force = false ) {
 	}
 
 	foreach ( spotinder_defaults() as $name => $value ) {
-		if ( in_array( $name, array( 'google_client_id', 'google_client_secret', 'google_redirect_uri', 'spotify_client_id', 'spotify_client_secret', 'logo', 'spotify_logo', 'campaign_story', 'share_image' ), true ) ) {
+		if ( in_array( $name, array( 'google_client_id', 'google_client_secret', 'spotify_client_id', 'spotify_client_secret', 'logo', 'spotify_logo', 'campaign_story', 'share_image' ), true ) ) {
 			continue;
 		}
 		if ( ! $force && null !== get_field( $name, 'option', false ) ) {

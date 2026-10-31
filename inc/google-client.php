@@ -1,19 +1,23 @@
 <?php
 /**
- * Login com o Google (OpenID Connect, Authorization Code Flow).
+ * Login com o Google (OpenID Connect, Authorization Code Flow em popup).
+ *
+ * O botão abre o popup da biblioteca oficial do Google (Google Identity Services) e o
+ * código volta ao navegador por postMessage — não por uma URL do site. Isso evita o
+ * redirecionamento com ?iss=https://accounts.google.com, que o ModSecurity da
+ * hospedagem bloqueia (406).
  *
  * Princípio de privacidade: pedimos só os escopos "openid profile" (ID da conta,
- * nome e foto pública) — nada de e-mail. Os tokens só vivem durante a requisição
- * do callback e nunca são gravados no banco.
+ * nome e foto pública) — nada de e-mail. Os tokens só vivem durante a troca do
+ * código e nunca são gravados no banco.
  *
  * @package Spotinder
  */
 
 defined( 'ABSPATH' ) || exit;
 
-const SPOTINDER_GOOGLE_AUTHORIZE = 'https://accounts.google.com/o/oauth2/v2/auth';
-const SPOTINDER_GOOGLE_TOKEN     = 'https://oauth2.googleapis.com/token';
-const SPOTINDER_GOOGLE_SCOPE     = 'openid profile';
+const SPOTINDER_GOOGLE_TOKEN = 'https://oauth2.googleapis.com/token';
+const SPOTINDER_GOOGLE_SCOPE = 'openid profile';
 
 /**
  * Credenciais configuradas?
@@ -23,40 +27,16 @@ function spotinder_google_configured() {
 }
 
 /**
- * URL de autorização.
- *
- * @param string $state Estado anti-CSRF.
- * @param string $nonce Nonce do OpenID Connect (volta dentro do id_token).
- */
-function spotinder_google_authorize_url( $state, $nonce ) {
-	return SPOTINDER_GOOGLE_AUTHORIZE . '?' . http_build_query(
-		array(
-			'response_type' => 'code',
-			'client_id'     => spotinder_opt( 'google_client_id' ),
-			'scope'         => SPOTINDER_GOOGLE_SCOPE,
-			'redirect_uri'  => spotinder_redirect_uri(),
-			'state'         => $state,
-			'nonce'         => $nonce,
-			'prompt'        => 'select_account',
-		),
-		'',
-		'&',
-		PHP_QUERY_RFC3986
-	);
-}
-
-/**
  * Troca o code pelo id_token e devolve os dados da conta.
  *
  * O id_token chega direto do endpoint de token do Google, por HTTPS e com o
  * client_secret: pela especificação (OpenID Connect Core, 3.1.3.7) a validação
- * TLS substitui a checagem da assinatura. Conferimos emissor, público, validade e nonce.
+ * TLS substitui a checagem da assinatura. Conferimos emissor, público e validade.
  *
- * @param string $code  Código recebido no callback.
- * @param string $nonce Nonce enviado na autorização.
+ * @param string $code Código entregue pelo popup do Google.
  * @return array{sub:string,name:string,given_name:string,picture:string}|WP_Error
  */
-function spotinder_google_exchange_code( $code, $nonce ) {
+function spotinder_google_exchange_code( $code ) {
 	$response = wp_remote_post(
 		SPOTINDER_GOOGLE_TOKEN,
 		array(
@@ -66,7 +46,8 @@ function spotinder_google_exchange_code( $code, $nonce ) {
 				'code'          => $code,
 				'client_id'     => spotinder_opt( 'google_client_id' ),
 				'client_secret' => spotinder_opt( 'google_client_secret' ),
-				'redirect_uri'  => spotinder_redirect_uri(),
+				// Valor fixo do fluxo em popup do Google Identity Services.
+				'redirect_uri'  => 'postmessage',
 			),
 		)
 	);
@@ -89,7 +70,6 @@ function spotinder_google_exchange_code( $code, $nonce ) {
 		|| ! in_array( $claims['iss'] ?? '', array( 'https://accounts.google.com', 'accounts.google.com' ), true )
 		|| ( $claims['aud'] ?? '' ) !== spotinder_opt( 'google_client_id' )
 		|| (int) ( $claims['exp'] ?? 0 ) < time() - 60
-		|| ! hash_equals( $nonce, (string) ( $claims['nonce'] ?? '' ) )
 		|| empty( $claims['sub'] )
 	) {
 		return new WP_Error( 'google_id_token', 'Token do Google inválido.' );

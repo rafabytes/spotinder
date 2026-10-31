@@ -396,24 +396,29 @@ body.login::after {
 	color: rgb(255 255 255 / 0.75);
 }
 
-.spotinder-member-login .spotinder-google-btn {
+.spotinder-member-login .gsi-btn {
 	display: inline-flex;
 	align-items: center;
-	gap: 0.5rem;
-	padding: 0.7rem 1.4rem;
-	font-weight: 600;
-	color: #fff;
+	gap: 10px;
+	height: 40px;
+	padding: 0 12px;
+	font: 500 14px/20px Roboto, Arial, sans-serif;
+	letter-spacing: 0.25px;
+	color: #1f1f1f;
 	text-decoration: none;
-	background: var(--brand);
+	background: #fff;
+	border: 1px solid #747775;
 	border-radius: 999px;
-	box-shadow: 0 10px 24px color-mix(in srgb, var(--brand) 35%, transparent);
 }
 
-.spotinder-member-login .spotinder-google-btn:hover {
-	filter: brightness(1.1);
+.spotinder-member-login .gsi-btn:hover {
+	background: #f2f2f2;
+	box-shadow:
+		0 1px 2px rgb(60 64 67 / 0.3),
+		0 1px 3px 1px rgb(60 64 67 / 0.15);
 }
 
-.spotinder-member-login .spotinder-google-btn svg {
+.spotinder-member-login .gsi-btn-logo {
 	width: 20px;
 	height: 20px;
 }
