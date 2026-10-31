@@ -273,6 +273,8 @@ function spotinder_migration_2_texts() {
 /**
  * Textos alterados na v5 (antigo(s) → novo): login com Google, artistas escolhidos
  * pela pessoa e os textos da home editados em produção (que viraram o padrão).
+ * Os itens dos repeaters ficam fixos com o texto da época: os padrões atuais mudaram
+ * de tamanho e de ordem (a home passou a ter 3 passos e 3 recursos).
  */
 function spotinder_migration_5_texts() {
 	$d = spotinder_defaults();
@@ -300,7 +302,7 @@ function spotinder_migration_5_texts() {
 			'consent_share_label' => array( 'Autorizo exibir meu nome público e meus artistas/músicas mais ouvidos para outras pessoas do app.', $d['consent_share_label'] ),
 		),
 		'rows'    => array(
-			array( 'how_steps', null, 'title', 'Conecte o Spotify', $d['how_steps'][0]['title'] ),
+			array( 'how_steps', null, 'title', 'Conecte o Spotify', 'Escolha seus artistas' ),
 			array(
 				'how_steps',
 				null,
@@ -310,10 +312,10 @@ function spotinder_migration_5_texts() {
 					'É o único jeito de entrar. Lemos só seus artistas e músicas mais ouvidos — nada de e-mail, foto ou histórico completo.',
 					'Usamos sua localização e sua biblioteca para encontrar o match ideal.',
 				),
-				$d['how_steps'][0]['text'],
+				'Entre com sua conta Google e monte seu perfil com os artistas e as músicas que são a sua cara. Se quiser, ative a localização para achar gente perto.',
 			),
-			array( 'how_steps', null, 'title', 'Deu som!', $d['how_steps'][2]['title'] ),
-			array( 'features', null, 'text', 'No lugar do chat, uma playlist com o que vocês têm em comum. Dá para salvar direto na sua conta.', $d['features'][1]['text'] ),
+			array( 'how_steps', null, 'title', 'Deu som!', 'Fez barulho!' ),
+			array( 'features', null, 'text', 'No lugar do chat, uma playlist com o que vocês têm em comum. Dá para salvar direto na sua conta.', 'No lugar do chat, uma playlist com as músicas favoritas de vocês dois — o que têm em comum e o que um indica ao outro.' ),
 			array(
 				'features',
 				null,
@@ -322,7 +324,7 @@ function spotinder_migration_5_texts() {
 					'Não guardamos seus tokens do Spotify, não pedimos e-mail, a foto é opcional e você apaga tudo com um clique.',
 					'Não guardamos seus tokens do Spotify, não pedimos foto nem e-mail e você apaga tudo com um clique.',
 				),
-				$d['features'][4]['text'],
+				'Sem senha e sem e-mail: da sua conta Google recebemos só nome e foto pública. A foto é opcional e você apaga tudo com um clique.',
 			),
 			array( 'faq', null, 'question', 'Preciso ter Spotify Premium?', 'Preciso ter conta no Spotify?' ),
 			array( 'faq', null, 'answer', 'Não. Qualquer conta Spotify serve para entrar. O player de trechos funciona para todos; quem tem Premium e está logado no Spotify ouve a faixa completa.', $q( 'Preciso ter conta no Spotify?' )['answer'] ),

@@ -54,14 +54,14 @@ function spotinder_defaults() {
 		'policy_version'        => '2026-10-31',
 
 		// Header.
-		'login_label'           => 'Entrar com o Google',
+		'login_label'           => 'Entrar com Google',
 		'nav_cta_label'         => 'Começar a ouvir junto',
 
 		// Home — hero.
-		'hero_eyebrow'          => 'Unidos pelo play',
-		'hero_title'            => 'Música em primeiro lugar.',
+		'hero_eyebrow'          => 'Conectados pelo play',
+		'hero_title'            => 'Música é a nossa paixão.',
 		'hero_text'             => 'Sintonize com quem está na mesma frequência que você.',
-		'hero_cta_label'        => 'Continuar com o Google',
+		'hero_cta_label'        => 'Criar meu perfil sonoro',
 		'hero_secondary_label'  => 'Ver como funciona',
 		'hero_stats'            => array(
 			array(
@@ -117,27 +117,22 @@ function spotinder_defaults() {
 
 		// Home — como funciona.
 		'how_eyebrow'           => 'Como funciona',
-		'how_title'             => 'Quatro passos entre você e sua próxima turma.',
+		'how_title'             => 'Três passos entre você e seu próximo hit.',
 		'how_steps'             => array(
 			array(
 				'emoji' => '🎧',
-				'title' => 'Escolha seus artistas',
-				'text'  => 'Entre com sua conta Google e monte seu perfil com os artistas e as músicas que são a sua cara. Se quiser, ative a localização para achar gente perto.',
+				'title' => 'Escolha seus artistas.',
+				'text'  => '',
 			),
 			array(
-				'emoji' => '🃏',
-				'title' => 'Deslize por gostos',
-				'text'  => 'Cada cartão mostra os artistas favoritos de alguém e quanto vocês combinam. Curtiu o som? Deslize para a direita.',
+				'emoji' => '👥',
+				'title' => 'Encontre seu feat.',
+				'text'  => '',
 			),
 			array(
-				'emoji' => '⚡',
-				'title' => 'Fez barulho!',
-				'text'  => 'Quando os dois curtem, rola um match com a trilha sonora de vocês tocando e uma playlist feita da interseção dos gostos.',
-			),
-			array(
-				'emoji' => '📍',
-				'title' => 'Combinem um rolê',
-				'text'  => 'Sem chat: vocês veem as redes sociais que cada um escolheu mostrar e podem se convidar para eventos da agenda.',
+				'emoji' => '🍻',
+				'title' => 'Marque rolês.',
+				'text'  => '',
 			),
 		),
 
@@ -161,32 +156,17 @@ function spotinder_defaults() {
 			array(
 				'emoji' => '🎵',
 				'title' => 'Trilha sonora do match',
-				'text'  => 'Ao dar match, toca um trecho da música que mais representa vocês dois — via player oficial do Spotify.',
-			),
-			array(
-				'emoji' => '💿',
-				'title' => 'Playlist em comum',
-				'text'  => 'No lugar do chat, uma playlist com as músicas favoritas de vocês dois — o que têm em comum e o que um indica ao outro.',
+				'text'  => '',
 			),
 			array(
 				'emoji' => '🎟️',
 				'title' => 'Agenda de eventos',
-				'text'  => 'Shows, audições coletivas e encontros oficiais. Marque presença e veja quais matches também vão.',
-			),
-			array(
-				'emoji' => '🤝',
-				'title' => 'Convites sem chat',
-				'text'  => 'Proponha um rolê para um match — um show, um karaokê, uma feira de discos. A outra pessoa aceita ou não, sem pressão.',
-			),
-			array(
-				'emoji' => '🛡️',
-				'title' => 'Privacidade de verdade',
-				'text'  => 'Sem senha e sem e-mail: da sua conta Google recebemos só nome e foto pública. A foto é opcional e você apaga tudo com um clique.',
+				'text'  => '',
 			),
 			array(
 				'emoji' => '🚩',
 				'title' => 'Bloqueio e denúncia',
-				'text'  => 'Qualquer match pode ser desfeito, bloqueado ou denunciado a qualquer momento. Moderação humana revisa tudo.',
+				'text'  => '',
 			),
 		),
 
@@ -232,9 +212,9 @@ function spotinder_defaults() {
 		),
 
 		// Home — CTA final.
-		'final_cta_title'       => 'Seu próximo melhor amigo pode estar no mesmo refrão.',
-		'final_cta_text'        => 'Leva menos de um minuto. Foto opcional, sem senha, sem chat.',
-		'final_cta_label'       => 'Continuar com o Google',
+		'final_cta_title'       => 'Seu próximo feat. pode ser um hit.',
+		'final_cta_text'        => 'Entre e descubra.',
+		'final_cta_label'       => 'Criar meu perfil sonoro',
 
 		// App — intenções e tipos de convite.
 		'intentions'            => array(

@@ -19,7 +19,9 @@ $spotinder_features = (array) spotinder_opt( 'features' );
 			<div class="card group space-y-3 p-6 transition hover:-translate-y-1 hover:border-brand/40">
 				<span class="grid size-12 place-items-center rounded-2xl bg-white/5 text-2xl transition group-hover:bg-brand/20" aria-hidden="true"><?php echo esc_html( $spotinder_f['emoji'] ); ?></span>
 				<h3 class="text-lg font-semibold text-white"><?php echo esc_html( $spotinder_f['title'] ); ?></h3>
-				<p class="text-sm leading-relaxed text-white/60"><?php echo esc_html( $spotinder_f['text'] ); ?></p>
+				<?php if ( '' !== trim( (string) $spotinder_f['text'] ) ) : ?>
+					<p class="text-sm leading-relaxed text-white/60"><?php echo esc_html( $spotinder_f['text'] ); ?></p>
+				<?php endif; ?>
 			</div>
 		<?php endforeach; ?>
 	</div>
